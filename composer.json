@@ -1,0 +1,25 @@
+{
+    "name": "brackets/verifications",
+    "require": {
+        "../../vendor/twilio/sdk": "^6.0"
+    },
+    "autoload": {
+        "classmap": [],
+        "psr-4": {
+            "Brackets\\Verifications\\": "src/"
+        }
+    },
+    "require-dev": {
+        "../../vendor/guzzlehttp/guzzle": "^6.3 || ^7.0",
+        "theseer/phpdox": "^0.12.0",
+        "../../vendor/phpunit/phpunit": "^8.5"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Brackets\\Verifications\\VerificationServiceProvider",
+                "Dotunj\\LaraTwilio\\LaraTwilioServiceProvider"
+            ]
+        }
+    }
+}
