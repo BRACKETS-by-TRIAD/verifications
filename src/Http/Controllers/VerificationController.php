@@ -25,10 +25,10 @@ class VerificationController extends Controller
      */
     public function verify(Request $request, Verifiable $verifiable)
     {
-        $model = $verifiable->getModel();
+        $model = $verifiable->getModelInstance();
 
         return $this->verification->verifyCode($model, $request->get('code'))
-               ? redirect()->route()
+               ? redirect()->route('/')     //todo
                : redirect()->back();
     }
 }

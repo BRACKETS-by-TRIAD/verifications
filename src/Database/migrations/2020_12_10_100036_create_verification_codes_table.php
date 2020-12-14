@@ -16,12 +16,13 @@ class CreateVerificationCodesTable extends Migration
         Schema::create('verification_codes', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('verifiable_id');
+            $table->string('verifiable_type');
             $table->string('code');
             $table->dateTime('expires_at');
             $table->dateTime('used_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['verifiable_id', 'code']);
+            $table->unique(['verifiable_id', 'verifiable_type', 'code']);
         });
     }
 

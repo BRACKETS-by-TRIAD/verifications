@@ -10,10 +10,10 @@ abstract class EmailChannel
 {
     /**
      * @param Verifiable $verifiable
-     * @param String $code
+     * @param string $code
      * @throws \Exception
      */
-    public static function sendEmailCode(Verifiable $verifiable, String $code): void
+    public static function sendEmailCode(Verifiable $verifiable, string $code): void
     {
         $recipient = $verifiable->getEmailAttribute();
 

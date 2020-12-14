@@ -9,10 +9,10 @@ abstract class SMSChannel
 {
     /**
      * @param Verifiable $verifiable
-     * @param String $code
+     * @param string $code
      * @throws \Twilio\Exceptions\TwilioException
      */
-    public static function sendSmsCode(Verifiable $verifiable, String $code): void
+    public static function sendSmsCode(Verifiable $verifiable, string $code): void
     {
         $twilioClient = new Client();
 

@@ -5,7 +5,6 @@ namespace Brackets\Verifications;
 
 
 use Brackets\Verifications\Commands\VerificationsInstall;
-use Brackets\Verifications\Providers\EventServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class VerificationServiceProvider  extends ServiceProvider

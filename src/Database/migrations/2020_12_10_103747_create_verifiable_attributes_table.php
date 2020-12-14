@@ -17,7 +17,6 @@ class CreateVerifiableAttributesTable extends Migration
             $table->id();
             $table->unsignedBigInteger('verifiable_id');
             $table->string('verifiable_type');
-            $table->string('phone_number');
             $table->string('attribute_name');
             $table->string('attribute_value');
             $table->timestamps();
@@ -30,6 +29,6 @@ class CreateVerifiableAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_attributes');
+        Schema::dropIfExists('verifiable_attributes');
     }
 }

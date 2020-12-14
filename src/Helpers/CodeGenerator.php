@@ -4,6 +4,8 @@
 namespace Brackets\Verifications\Helpers;
 
 
+use Illuminate\Support\Str;
+
 abstract class CodeGenerator
 {
     /**

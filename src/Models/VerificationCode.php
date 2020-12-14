@@ -4,7 +4,7 @@
 namespace Brackets\Verifications\Models;
 
 
-use Brackets\AdminGenerator\Generate\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class VerificationCode extends Model
 {
@@ -13,8 +13,8 @@ class VerificationCode extends Model
     protected $fillable = [
         'code',
         'verifiable_id',
+        'verifiable_type',
         'expires_at',
         'used_at'
     ];
-
 }
