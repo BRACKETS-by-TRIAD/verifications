@@ -18,7 +18,7 @@ class CreateVerifiableAttributesTable extends Migration
             $table->unsignedBigInteger('verifiable_id');
             $table->string('verifiable_type');
             $table->string('attribute_name');
-            $table->string('attribute_value');
+            $table->string('attribute_value')->nullable();
             $table->timestamps();
 
             $table->unique(['verifiable_id', 'verifiable_type', 'attribute_name']);

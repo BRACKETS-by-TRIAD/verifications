@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'simple_verifications_enabled' => true,
     '2fa' => [
         'required_for_all_users' => true,
         'set_per_user_available' => false,

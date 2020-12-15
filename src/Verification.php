@@ -33,9 +33,19 @@ class Verification
      */
     public function verify(Verifiable $verifiable, String $channel, String $redirectTo = '/')
     {
-        $this->generateCodeAndSend($verifiable, $channel);
+        $perUserConfig = config('verifications.2fa.set_per_user_available')
+                            ? auth()->user()->verifiableAttributes()->where('attribute_name', '=', 'login_verification')
+                                                                    ->where('attribute_value', true)
+                                                                    ->first()
+                            : false;
 
-        return redirect()->route('brackets/verifications/show', ['redirectTo' => $redirectTo]);
+        if(config('verifications.simple_verifications_enabled') || config('verifications.2fa.required_for_all_users') || $perUserConfig) {
+            $this->generateCodeAndSend($verifiable, $channel);
+
+            return redirect()->route('brackets/verifications/show', ['redirectTo' => $redirectTo]);
+        }
+
+        return redirect()->route($redirectTo);
     }
 
     /**

@@ -20,12 +20,4 @@ interface Verifiable
     public function getPhoneAttribute(): string;
 
     public function getEmailAttribute(): string;
-
-    /**
-     * Should return $this->verifiableAttributes()->fill($request)->save();
-     *
-     * @param Request $request
-     * @return Model
-     */
-    public function saveVerifiableAttributes(Request $request): Model;
 }
