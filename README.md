@@ -55,11 +55,15 @@ class User extends Authenticatable implements Verifiable
 
 Then you just neeed to change return value in the method, where you want to insert verification middle step.
 
-`@verify(Verifiable $verifiable, String $channel, String $redirectTo = '/')` <br/>
-**Method params:** <br/>
-`$verifiable` - morphable entity to verifiable  <br/>
-`$channel` - channel used to send verification code 'sms'/'email' <br/>
-`$redirectTo` - route name to redirect if the verification passed <br/>
+`@verify(Verifiable $verifiable, String $channel, String $redirectTo = '/')` 
+
+**Method params:** 
+
+`$verifiable` - morphable entity to verifiable  
+
+`$channel` - channel used to send verification code 'sms'/'email' 
+
+`$redirectTo` - route name to redirect if the verification passed 
 
 ```.
     public function foo()
