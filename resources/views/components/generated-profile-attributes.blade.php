@@ -3,11 +3,11 @@
         <script type="text/javascript">
             $(function() {
                 var template =`
-                    @foreach(config('verifications.2fa.attributes') as $attribute)
-                    <div class="form-group row align-items-center">
-                        <label for="{{ $attribute['name'] }}" class="col-form-label text-md-right">{{ $attribute['label'] }}</label>
-                            <input id="{{ $attribute['name'] }}" name="{{ $attribute['name'] }}" type="text" class="form-control" placeholder="{{ $attribute['label'] }}">
-                    </div>
+                    @foreach(config('verifications.2fa.generated_attributes') as $attribute)
+                        <div class="form-group row align-items-center">
+                            <label for="{{ $attribute['name'] }}" class="col-form-label text-md-right">{{ $attribute['label'] }}</label>
+                                <input id="{{ $attribute['name'] }}" name="{{ $attribute['name'] }}" type="text" class="form-control" placeholder="{{ $attribute['label'] }}">
+                        </div>
                     @endforeach()
                 `;
 

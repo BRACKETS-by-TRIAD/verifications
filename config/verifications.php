@@ -4,7 +4,7 @@ return [
     '2fa' => [
         'required_for_all_users' => true,
         'set_per_user_available' => false,
-        'attributes' => [
+        'generated_attributes' => [         // fill only if u want generate attributes to profile
             [
                 'label' => 'Phone',
                 'name' => 'phone'

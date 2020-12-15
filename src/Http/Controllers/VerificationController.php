@@ -26,6 +26,7 @@ class VerificationController extends Controller
      */
     public function verify(Request $request, Verifiable $verifiable)
     {
+        //TODO: flash messages
         return $this->verification->verifyCode($verifiable, $request->get('code'))
                ? redirect()->route($request->get('redirectTo'))
                : redirect()->back();
