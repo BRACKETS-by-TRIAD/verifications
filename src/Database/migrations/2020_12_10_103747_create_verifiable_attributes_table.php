@@ -20,6 +20,8 @@ class CreateVerifiableAttributesTable extends Migration
             $table->string('attribute_name');
             $table->string('attribute_value');
             $table->timestamps();
+
+            $table->unique(['verifiable_id', 'verifiable_type', 'attribute_name']);
         });
     }
     /**
