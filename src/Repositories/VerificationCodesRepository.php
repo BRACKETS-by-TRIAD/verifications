@@ -16,21 +16,28 @@ class VerificationCodesRepository
                 'code' => $code,
                 'verifiable_id' => $verifiable->getModelInstance()->id,
                 'verifiable_type' => get_class($verifiable->getModelInstance()),
-                'expires_at' => Carbon::now()->addMinutes(config('verifications.code.validity_length_minutes'))->toDateTime(),
-                'used_at'
+                'expires_at' => Carbon::now()->addMinutes(config('verifications.code.validity_length_minutes'))->toDateTime()
             ]);
         });
     }
 
     public function verifyCode(Verifiable $verifiable, $code)
     {
+        $now = Carbon::now()->toDateTime();
+
         $verificationCode = VerificationCode::where('verifiable_id', $verifiable->getModelInstance()->id)
                                             ->where('verifiable_type', get_class($verifiable->getModelInstance()))
                                             ->where('code', $code)
                                             ->whereNull('used_at')
-                                            ->where('expire_at', '>', Carbon::now()->toDateTime())
+                                            ->where('expire_at', '>', $now)
                                             ->last();
 
-        return $verificationCode ? true : false;
+        if($verificationCode) {
+            $verificationCode->used_at = $now;
+
+            return true;
+        }
+
+        return false;
     }
 }

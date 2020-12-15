@@ -14,21 +14,20 @@ class VerificationController extends Controller
      */
     private $verification;
 
-    public function showVerificationForm()
+    public function showVerificationForm($redirectTo)
     {
-        return view("viewname", compact());
+        return view("verification", compact($redirectTo));
     }
 
     /**
      * @param Request $request
      * @param Verifiable $verifiable
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function verify(Request $request, Verifiable $verifiable)
     {
-        $model = $verifiable->getModelInstance();
-
-        return $this->verification->verifyCode($model, $request->get('code'))
-               ? redirect()->route('/')     //todo
+        return $this->verification->verifyCode($verifiable, $request->get('code'))
+               ? redirect()->route($request->get('redirectTo'))
                : redirect()->back();
     }
 }

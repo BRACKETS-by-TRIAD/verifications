@@ -28,14 +28,14 @@ class Verification
      * @param Verifiable $verifiable
      * @param String $channel
      * @param String $redirectTo
+     * @return \Illuminate\Http\RedirectResponse
      * @throws \Twilio\Exceptions\TwilioException
      */
-    public function verify(Verifiable $verifiable, String $channel, String $redirectTo)
+    public function verify(Verifiable $verifiable, String $channel, String $redirectTo = '/')
     {
         $this->generateCodeAndSend($verifiable, $channel);
 
-        //TODO
-//        return redirect()->route();
+        return redirect()->route('brackets/verifications/show', ['redirectTo' => $redirectTo]);
     }
 
     /**

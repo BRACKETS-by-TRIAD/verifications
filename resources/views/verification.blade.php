@@ -25,7 +25,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="hidden" name="remember" value="1">
+                                    <input type="hidden" name="redirectTo" value="{{ $redirectTo }}">
                                     <button type="submit" class="btn btn-primary btn-block btn-spinner">
                                         @lang('verifications.verify')
                                     </button>
