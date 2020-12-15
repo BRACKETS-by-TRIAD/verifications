@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'simple_verifications_enabled' => true,
+    'simple_verifications_enabled' => true, // enable if you need to use this package as middle step to verify some custom type of action
     '2fa' => [
-        'required_for_all_users' => true,
-        'set_per_user_available' => false,
+        'required_for_all_users' => true,   // enables 2fa for all system users
+        'set_per_user_available' => false,  // enables user's personal setup for 2fa in profile
         'generated_attributes' => [         // fill only if u want generate attributes to profile
             [
                 'label' => 'Phone',

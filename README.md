@@ -15,6 +15,17 @@ TWILIO_NUMBER:
 
 Basic configuration defined in `/config/verifications.php`:
 ```.
+    'simple_verifications_enabled' => true, // enable if you need to use this package as middle step to verify some custom type of action
+    '2fa' => [
+        'required_for_all_users' => true,   // enables 2fa for all system users
+        'set_per_user_available' => false,  // enables user's personal setup for 2fa in profile
+        'generated_attributes' => [         // fill only if u want generate attributes to profile
+            [
+                'label' => 'Phone',
+                'name' => 'phone'
+            ]
+        ]
+    ],
     'code' => [
         'type' => 'numeric',                // specifies type of verification code, it has to be set to 'numeric' or 'string'
         'length' => 6,                      // specifies verification code length, set to 6 by default
@@ -36,9 +47,14 @@ class User extends Authenticatable implements Verifiable
         return $this;
     }
 
+    public function verifiableAttributes(): MorphMany
+    {
+        return $this->morphMany(VerifiableAttribute::class, 'verifiable');
+    }
+
     public function getPhoneAttribute(): string
     {
-        return $this->morphMany(VerifiableAttribute::class, 'verifiable')
+        return $this->verifiableAttributes()
                     ->where('attribute_name', '=', 'phone')
                     ->first()
                     ->attribute_value;
@@ -72,3 +88,7 @@ Then you just neeed to change return value in the method, where you want to inse
         return (new Verification())->verify($user, 'sms', '/home')    
     }
 ```
+### Two factor authentication
+
+If u need to implement this package for two factor authentication, there is one more thing
+you need to do - add `use TwoFactorVerifiableTrait` in your **User** model.
