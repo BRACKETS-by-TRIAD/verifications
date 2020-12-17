@@ -1,17 +1,27 @@
 <?php
 
 return [
-    'simple_verifications_enabled' => true, // enable if you need to use this package as middle step to verify some custom type of action
-    '2fa' => [
-        'required_for_all_users' => true,   // enables 2fa for all system users
-        'set_per_user_available' => false,  // enables user's personal setup for 2fa in profile
-        'generated_attributes' => [         // fill only if u want generate attributes to profile
-            [
-                'label' => 'Phone',
-                'name' => 'phone'
-            ]
+    'enabled' => true, // true, false                      // global package enable/disable for test purposes @ localhost
+    'actions' => [
+        'invoices' => [
+            'enabled' => true,
+            'model' => \App\Core\Models\Invoice::class,   // implements Verifiable
+            'channel' => 'sms'
         ]
     ],
+    '2fa' => [
+        'admin-users' => [
+            'enabled' => 'forced',                          // forced, optional, false
+            'model' => \App\Core\Models\AdminUser::class,   // implements Verifiable
+            'channel' => 'sms',                             // sms, email
+        ],
+        'customers' => [
+            'enabled' => 'optional',                        // forced, optional, false
+            'model' => \App\Core\Models\User::class,        // implements Verifiable
+            'channel' => 'sms',                             // sms, email
+        ],
+    ],
+
     'code' => [
         'type' => 'numeric',                // specifies type of verification code, it has to be set to 'numeric' or 'string'
         'length' => 6,                      // specifies verification code length, set to 6 by default

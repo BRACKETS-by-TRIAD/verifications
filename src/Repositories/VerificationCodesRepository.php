@@ -14,8 +14,8 @@ class VerificationCodesRepository
         return DB::transaction(function () use ($verifiable, $code) {
             return VerificationCode::create([
                 'code' => $code,
-                'verifiable_id' => $verifiable->getModelInstance()->id,
-                'verifiable_type' => get_class($verifiable->getModelInstance()),
+                'verifiable_id' => $verifiable->getKey(),
+                'verifiable_type' => get_class($verifiable),
                 'expires_at' => Carbon::now()->addMinutes(config('verifications.code.validity_length_minutes'))->toDateTime()
             ]);
         });
@@ -25,8 +25,8 @@ class VerificationCodesRepository
     {
         $now = Carbon::now()->toDateTime();
 
-        $verificationCode = VerificationCode::where('verifiable_id', $verifiable->getModelInstance()->id)
-                                            ->where('verifiable_type', get_class($verifiable->getModelInstance()))
+        $verificationCode = VerificationCode::where('verifiable_id', $verifiable->getKey())
+                                            ->where('verifiable_type', get_class($verifiable))
                                             ->where('code', $code)
                                             ->whereNull('used_at')
                                             ->where('expire_at', '>', $now)

@@ -22,7 +22,7 @@ abstract class CodeGenerator
                 $code = '';
 
                 for($i = 0; $i < config('verifications.code.length', 6); $i++) {
-                    $code = $code . rand(0, 9);
+                    $code = $code . strval(rand(0, 9));
                 }
 
                 return $code;

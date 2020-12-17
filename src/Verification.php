@@ -2,8 +2,7 @@
 
 namespace Brackets\Verifications;
 
-use Brackets\Verifications\Channels\EmailChannel;
-use Brackets\Verifications\Channels\SMSChannel;
+use Brackets\Verifications\Channels\EmailProviderInterface;
 use Brackets\Verifications\Helpers\CodeGenerator;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
@@ -15,32 +14,21 @@ class Verification
      */
     private $repo;
 
-    /** @var SMSChannel */
-    private $SMSChannel;
-
-    public function __construct(VerificationCodesRepository $repo, SMSChannel $SMSChannel)
+    public function __construct(VerificationCodesRepository $repo)
     {
         $this->repo = $repo;
-        $this->SMSChannel = $SMSChannel;
     }
 
     /**
      * @param Verifiable $verifiable
-     * @param String $channel
      * @param String $redirectTo
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Twilio\Exceptions\TwilioException
      */
-    public function verify(Verifiable $verifiable, String $channel, String $redirectTo = '/')
+    public function verify(Verifiable $verifiable, String $redirectTo = '/')
     {
-        $perUserConfig = config('verifications.2fa.set_per_user_available')
-                            ? auth()->user()->verifiableAttributes()->where('attribute_name', '=', 'login_verification')
-                                                                    ->where('attribute_value', true)
-                                                                    ->first()
-                            : false;
-
-        if(config('verifications.simple_verifications_enabled') || config('verifications.2fa.required_for_all_users') || $perUserConfig) {
-            $this->generateCodeAndSend($verifiable, $channel);
+        if(config('verifications.enabled') && $this->shouldVerify($verifiable)) {
+            $this->generateCodeAndSend($verifiable);
 
             return redirect()->route('brackets/verifications/show', ['redirectTo' => $redirectTo]);
         }
@@ -48,29 +36,32 @@ class Verification
         return redirect()->route($redirectTo);
     }
 
+    private function shouldVerify(Verifiable $verifiable): bool
+    {
+        $entities = array_merge(config('verifications.default'), config('verifications.2fa'));
+
+        foreach($entities as $entity) {
+            if($verifiable instanceof $entity['model']) {
+                return ($entity['enabled'] == 'forced') || ($entity['enabled'] == 'optional' && auth()->user()->login_verification);
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @param Verifiable $verifiable
-     * @param $channel
      * @return mixed
-     * @throws \Twilio\Exceptions\TwilioException
+     * @throws \Exception
      */
-    private function generateCodeAndSend(Verifiable $verifiable, $channel)
+    private function generateCodeAndSend(Verifiable $verifiable)
     {
-        $code = CodeGenerator::generateCode();
+        $code = CodeGenerator::generateCode();  //todo
 
-        switch ($channel)
-        {
-            case 'sms':
-                SMSChannel::sendSmsCode($verifiable, $code);
-                return $this->repo->createCode($verifiable, $code);
+        $provider = resolve(EmailProviderInterface::class);
+        $provider->sendCode($verifiable, $code);
 
-            case 'email':
-                EmailChannel::sendEmailCode($verifiable, $code);
-                return $this->repo->createCode($verifiable, $code);
-
-            default:
-                throw new \Exception('Unknown channel');
-        }
+        return $this->repo->createCode($verifiable, $code);
     }
 
     public function verifyCode(Verifiable $verifiable, $code): bool

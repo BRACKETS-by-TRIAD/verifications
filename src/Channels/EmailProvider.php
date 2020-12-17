@@ -6,14 +6,14 @@ namespace Brackets\Verifications\Channels;
 
 use Brackets\Verifications\Models\Verifiable;
 
-abstract class EmailChannel
+class EmailProvider implements EmailProviderInterface
 {
     /**
      * @param Verifiable $verifiable
      * @param string $code
      * @throws \Exception
      */
-    public static function sendEmailCode(Verifiable $verifiable, string $code): void
+    public function sendCode(Verifiable $verifiable, string $code): void
     {
         $recipient = $verifiable->getEmailAttribute();
 
