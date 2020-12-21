@@ -1,5 +1,5 @@
 # Verifications
-Package for verifying sms/email generated codes. Should be used for two factor authentication or verifying any simple action in your app.
+Package for verifying sms/email generated codes, which would be used for two factor authentication or verifying any simple action in your app.
 ## Installation
 
 1. `composer require brackets/verifications`
@@ -10,7 +10,7 @@ Package for verifying sms/email generated codes. Should be used for two factor a
 
 ### Base
 Required configuration you need to setup is defined in `/config/verifications.php`. 
-As you can see, there is commented-out some example cases for it's usage. Please keep strict key-names and values. 
+As you can see, there is commented-out some example cases for it's usage. Please, keep strict key-names and values. 
 ```.
     'enabled' => true, // true, false                      // global package enable/disable for test purposes @ localhost
     'actions' => [
@@ -73,13 +73,11 @@ class User extends Authenticatable implements Verifiable
 
 Then you just neeed to change return value in the method, where you want to insert verification middle step.
 
-`@verify(Verifiable $verifiable, String $channel, String $redirectTo = '/')` 
+`@verify(Verifiable $verifiable, String $redirectTo = '/')` 
 
 **Method params:** 
 
-`$verifiable` - morphable entity to verifiable  
-
-`$channel` - channel used to send verification code 'sms'/'email' 
+`$verifiable` - Entity which implements **Verifiable** interface
 
 `$redirectTo` - route name to redirect if the verification passed 
 
@@ -87,7 +85,7 @@ Then you just neeed to change return value in the method, where you want to inse
     public function foo()
     {
         // ...
-        return (new Verification())->verify($user, 'sms', '/home')    
+        return (new Verification())->verify($user, '/home')    
     }
 ```
 ### Two factor authentication
@@ -102,3 +100,6 @@ command, which generates migration and call migrate:
 
 ### Views
 TBD - craftable admin-auth generating..
+
+
+`php artisan admin:generate:user admin_users`
