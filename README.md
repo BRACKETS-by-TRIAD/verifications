@@ -71,6 +71,12 @@ class User extends Authenticatable implements Verifiable
 }
 ```
 
+If you need to insert **phone_number**/**email** to your table, you can use these commands, to generate migration and insert attributes:
+
+1. Adding email - `php artisan verifications:add-email {table_name}`
+
+2. Adding phone_number - `php artisan verifications:add-phone {table_name}`
+
 Then you just neeed to change return value in the method, where you want to insert verification middle step.
 
 `@verify(Verifiable $verifiable, String $redirectTo = '/')` 
