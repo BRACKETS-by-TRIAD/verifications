@@ -1,37 +1,52 @@
 # Verifications
-Package for verifying sms/email generated codes.
+Package for verifying sms/email generated codes. Should be used for two factor authentication or verifying any simple action in your app.
 ## Installation
 
-`harbor artisan verifications:instal`
+1. `composer require brackets/verifications`
+
+2. `php artisan verifications:install`
 
 ## Configuration
-In your project `.env` file define:
 
+### Base
+Required configuration you need to setup is defined in `/config/verifications.php`. 
+As you can see, there is commented-out some example cases for it's usage. Please keep strict key-names and values. 
 ```.
-TWILIO_SID:
-TWILIO_AUTH_TOKEN:
-TWILIO_NUMBER:
-```
-
-Basic configuration defined in `/config/verifications.php`:
-```.
-    'simple_verifications_enabled' => true, // enable if you need to use this package as middle step to verify some custom type of action
-    '2fa' => [
-        'required_for_all_users' => true,   // enables 2fa for all system users
-        'set_per_user_available' => false,  // enables user's personal setup for 2fa in profile
-        'generated_attributes' => [         // fill only if u want generate attributes to profile
-            [
-                'label' => 'Phone',
-                'name' => 'phone'
-            ]
-        ]
+    'enabled' => true, // true, false                      // global package enable/disable for test purposes @ localhost
+    'actions' => [
+//        'invoices' => [
+//            'enabled' => 'forced,                         // forced, optional, false
+//            'model' => \App\Core\Models\Invoice::class,   // implements Verifiable
+//            'channel' => 'sms'                            // sms, email
+//        ]
     ],
+    '2fa' => [
+//        'users' => [
+//            'enabled' => 'forced',                          // forced, optional, false
+//            'model' => \App\Core\Models\User::class,        // implements Verifiable
+//            'channel' => 'sms',                             // sms, email
+//        ],
+    ],
+
     'code' => [
         'type' => 'numeric',                // specifies type of verification code, it has to be set to 'numeric' or 'string'
         'length' => 6,                      // specifies verification code length, set to 6 by default
         'validity_length_minutes' => 10     // specifies length of code validity
     ],
 ```
+
+### Twilio - SMS
+If you need to use Twilio client for SMS notifications, you are 
+supposed to define common variables your project `.env` file:
+
+```.
+TWILIO_SID:"INSERT YOUR TWILIO SID HERE"
+TWILIO_AUTH_TOKEN:"INSERT YOUR TWILIO TOKEN HERE"
+TWILIO_NUMBER:"INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
+```
+
+More info here: https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio
+
 ## Usage
 
 Your entity should implement **Verifiable** interface, with generated method stubs.
@@ -41,23 +56,10 @@ Your entity should implement **Verifiable** interface, with generated method stu
 class User extends Authenticatable implements Verifiable
 {
     // ...
-    
-    public function getModelInstance(): Model
-    {
-        return $this;
-    }
-
-    public function verifiableAttributes(): MorphMany
-    {
-        return $this->morphMany(VerifiableAttribute::class, 'verifiable');
-    }
 
     public function getPhoneAttribute(): string
     {
-        return $this->verifiableAttributes()
-                    ->where('attribute_name', '=', 'phone')
-                    ->first()
-                    ->attribute_value;
+        return $this->owner->contact->phone;    // suitable usage
     }
 
     public function getEmailAttribute(): string
@@ -90,5 +92,13 @@ Then you just neeed to change return value in the method, where you want to inse
 ```
 ### Two factor authentication
 
-If u need to implement this package for two factor authentication, there is one more thing
-you need to do - add `use TwoFactorVerifiableTrait` in your **User** model.
+If you have setup for optional 2FA (set from user's profile), 
+you need to insert new database attribute **login_verify_enabled** to your entity.
+It would be done manually (by making own migration,..) or call
+command, which generates migration and call migrate:
+
+
+**php artisan verifications:add-2fa {table_name}** => e.g.: `php artisan verifications:add-2fa users`
+
+### Views
+TBD - craftable admin-auth generating..
