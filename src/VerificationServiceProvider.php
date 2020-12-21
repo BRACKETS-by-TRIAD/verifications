@@ -7,7 +7,7 @@ namespace Brackets\Verifications;
 use Brackets\Verifications\Channels\ChannelProviderInterface;
 use Brackets\Verifications\Channels\EmailProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
-use Brackets\Verifications\Channels\SMSProvider;
+use Brackets\Verifications\Channels\TwilioProvider;
 use Brackets\Verifications\Channels\SMSProviderInterface;
 use Brackets\Verifications\Commands\VerificationsInstall;
 use Illuminate\Support\ServiceProvider;
@@ -57,7 +57,7 @@ class VerificationServiceProvider  extends ServiceProvider
         $channels = array_values($entities)['channel'];
 
         if(in_array('sms', $channels)) {
-            $this->app->tag([SMSProvider::class], [SMSProviderInterface::class]);
+            $this->app->tag([TwilioProvider::class], [SMSProviderInterface::class]);
         }
 
         if(in_array('email', $channels)) {

@@ -5,7 +5,7 @@ namespace Brackets\Verifications\Channels;
 use Brackets\Verifications\Models\Verifiable;
 use Twilio\Rest\Client;
 
-class SMSProvider implements SMSProviderInterface
+class TwilioProvider implements SMSProviderInterface
 {
     /**
      * @var Client
