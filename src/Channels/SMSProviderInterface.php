@@ -4,9 +4,7 @@
 namespace Brackets\Verifications\Channels;
 
 
-use Brackets\Verifications\Models\Verifiable;
-
-interface SMSProviderInterface
+interface SMSProviderInterface extends ChannelProviderInterface
 {
-    public function sendCode(Verifiable $verifiable, string $code): void;
+
 }

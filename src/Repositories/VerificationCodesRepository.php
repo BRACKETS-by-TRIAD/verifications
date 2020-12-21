@@ -21,7 +21,7 @@ class VerificationCodesRepository
         });
     }
 
-    public function verifyCode(Verifiable $verifiable, $code)
+    public function verifyCode(Verifiable $verifiable, $code): bool
     {
         $now = Carbon::now()->toDateTime();
 
