@@ -8,6 +8,9 @@ use Brackets\Verifications\Channels\EmailProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
 use Brackets\Verifications\Channels\TwilioProvider;
 use Brackets\Verifications\Channels\SMSProviderInterface;
+use Brackets\Verifications\Commands\Add2faCommand;
+use Brackets\Verifications\Commands\AddEmailCommand;
+use Brackets\Verifications\Commands\AddPhoneCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,6 +25,9 @@ class VerificationServiceProvider  extends ServiceProvider
     {
         $this->commands([
             VerificationsInstall::class,
+            Add2faCommand::class,
+            AddEmailCommand::class,
+            AddPhoneCommand::class
         ]);
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'brackets/verifications');
