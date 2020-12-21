@@ -4,7 +4,6 @@
 namespace Brackets\Verifications;
 
 
-use Brackets\Verifications\Channels\ChannelProviderInterface;
 use Brackets\Verifications\Channels\EmailProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
 use Brackets\Verifications\Channels\TwilioProvider;
@@ -26,6 +25,7 @@ class VerificationServiceProvider  extends ServiceProvider
         ]);
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'brackets/verifications');
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'brackets/verifications');
 
         if(class_exists("Dotunj\\LaraTwilio\\LaraTwilioServiceProvider")) {
             $this->app->register("Dotunj\\LaraTwilio\\LaraTwilioServiceProvider");

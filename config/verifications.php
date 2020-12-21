@@ -3,23 +3,18 @@
 return [
     'enabled' => true, // true, false                      // global package enable/disable for test purposes @ localhost
     'actions' => [
-        'invoices' => [
-            'enabled' => true,
-            'model' => \App\Core\Models\Invoice::class,   // implements Verifiable
-            'channel' => 'sms'
-        ]
+//        'invoices' => [
+//            'enabled' => 'forced,                         // forced, optional, false
+//            'model' => \App\Core\Models\Invoice::class,   // implements Verifiable
+//            'channel' => 'sms'                            // sms, email
+//        ]
     ],
     '2fa' => [
-        'admin-users' => [
-            'enabled' => 'forced',                          // forced, optional, false
-            'model' => \App\Core\Models\AdminUser::class,   // implements Verifiable
-            'channel' => 'sms',                             // sms, email
-        ],
-        'customers' => [
-            'enabled' => 'optional',                        // forced, optional, false
-            'model' => \App\Core\Models\User::class,        // implements Verifiable
-            'channel' => 'sms',                             // sms, email
-        ],
+//        'users' => [
+//            'enabled' => 'forced',                          // forced, optional, false
+//            'model' => \App\Core\Models\User::class,        // implements Verifiable
+//            'channel' => 'sms',                             // sms, email
+//        ],
     ],
 
     'code' => [

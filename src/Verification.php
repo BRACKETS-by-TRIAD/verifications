@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Brackets\Verifications;
+
 
 use Brackets\Verifications\Channels\EmailProviderInterface;
 use Brackets\Verifications\Channels\SMSProviderInterface;

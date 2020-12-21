@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Brackets\Verifications\Http\Controllers;
+
 
 use App\Http\Controllers\Controller;
 use Brackets\Verifications\Models\Verifiable;

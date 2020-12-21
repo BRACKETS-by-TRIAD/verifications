@@ -1,5 +1,6 @@
 <?php
 
+
 namespace Brackets\Verifications\Commands;
 
 
@@ -28,21 +29,19 @@ class VerificationsInstall extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
         $this->info('Installing package brackets/verifications');
+
+        $this->publishConfig();
 
         $this->call('vendor:publish', [
             '--provider' => VerificationServiceProvider::class,
         ]);
 
-        $this->publishConfig();
-
         $this->call('migrate');
 
         $this->info('Package brackets/verifications installed');
-
-        return true;
     }
 
     private function publishConfig()

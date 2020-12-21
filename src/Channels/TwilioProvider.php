@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Brackets\Verifications\Channels;
+
 
 use Brackets\Verifications\Models\Verifiable;
 use Twilio\Rest\Client;

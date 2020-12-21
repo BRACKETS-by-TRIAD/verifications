@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Brackets\Verifications\Repositories;
+
 
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Models\VerificationCode;
