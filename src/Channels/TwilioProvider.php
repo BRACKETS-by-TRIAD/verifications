@@ -4,6 +4,7 @@
 namespace Brackets\Verifications\Channels;
 
 
+use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Twilio\Rest\Client;
 
@@ -18,9 +19,9 @@ class TwilioProvider implements SMSProviderInterface
 
     public function __construct()
     {
-        $account_sid = getenv("TWILIO_SID");
-        $auth_token = getenv("TWILIO_AUTH_TOKEN");
-        $this->twilio_number = getenv("TWILIO_NUMBER");
+        $account_sid = config('twilio.account_sid');
+        $auth_token = config('twilio.auth_token');
+        $this->twilio_number = config('twilio.twilio_number');
 
         $this->twilioClient = new Client($account_sid, $auth_token);
     }

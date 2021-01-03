@@ -4,11 +4,10 @@
 namespace Brackets\Verifications;
 
 
-use Brackets\Verifications\Channels\EmailProviderInterface;
-use Brackets\Verifications\Channels\SMSProviderInterface;
+use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
+use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
-use Faker\Provider\Base;
 use Illuminate\Support\Str;
 
 class Verification
@@ -58,7 +57,7 @@ class Verification
      * @return mixed
      * @throws \Exception
      */
-    private function generateCodeAndSend(Verifiable $verifiable)
+    public function generateCodeAndSend(Verifiable $verifiable)
     {
         $code = $this->generateCode();
 
@@ -100,7 +99,9 @@ class Verification
         switch(config('verifications.code.type'))
         {
             case 'numeric':
-                return strval(Base::randomNumber(config('verifications.code.length', 6), true));
+                $nbDigits = config('verifications.code.length', 6);
+                $max = 10 ** $nbDigits - 1;
+                return strval(mt_rand(10 ** ($nbDigits - 1), $max));
 
             case 'string':
                 return Str::random(config('verifications.code.length', 6));

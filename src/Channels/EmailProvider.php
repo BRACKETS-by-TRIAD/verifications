@@ -4,6 +4,7 @@
 namespace Brackets\Verifications\Channels;
 
 
+use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 
 class EmailProvider implements EmailProviderInterface

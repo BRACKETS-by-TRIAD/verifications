@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Brackets\Verifications\Channels;
+namespace Brackets\Verifications\Channels\Contracts;
 
 
 use Brackets\Verifications\Models\Verifiable;

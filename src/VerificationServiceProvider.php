@@ -4,10 +4,10 @@
 namespace Brackets\Verifications;
 
 
-use Brackets\Verifications\Channels\EmailProviderInterface;
+use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
 use Brackets\Verifications\Channels\TwilioProvider;
-use Brackets\Verifications\Channels\SMSProviderInterface;
+use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Commands\Add2faCommand;
 use Brackets\Verifications\Commands\AddEmailCommand;
 use Brackets\Verifications\Commands\AddPhoneCommand;
@@ -58,9 +58,8 @@ class VerificationServiceProvider  extends ServiceProvider
 
     private function bindProviders()
     {
-        $entities = array_merge(config('verifications.default'), config('verifications.2fa'));
-
-        $channels = array_values($entities)['channel'];
+        $allChannels = array_values(config('verifications.actions'))['channel'];
+        $channels = array_unique($allChannels);
 
         if(in_array('sms', $channels)) {
             $this->app->tag([TwilioProvider::class], [SMSProviderInterface::class]);

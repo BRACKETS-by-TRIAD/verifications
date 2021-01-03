@@ -15,14 +15,18 @@ class CreateVerificationCodesTable extends Migration
     {
         Schema::create('verification_codes', function (Blueprint $table) {
             $table->id();
+//            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('verifiable_id');
             $table->string('verifiable_type');
             $table->string('code');
             $table->dateTime('expires_at');
+//            $table->dateTime('verified_until')->nullable();
             $table->dateTime('used_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['verifiable_id', 'verifiable_type', 'code']);
+            $table->unique(['user_id', 'verifiable_id', 'verifiable_type', 'code']);
+
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
         });
     }
 
@@ -33,6 +37,10 @@ class CreateVerificationCodesTable extends Migration
      */
     public function down()
     {
+        Schema::table('verification_codes', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
+
         Schema::dropIfExists('verification_codes');
     }
 }
