@@ -4,11 +4,11 @@
 namespace Brackets\Verifications;
 
 
+use Brackets\Verifications\Channels\Contracts\ChannelProviderInterface;
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
-use Illuminate\Support\Str;
 
 class Verification
 {
@@ -16,74 +16,65 @@ class Verification
      * @var VerificationCodesRepository
      */
     private $repo;
+
     /**
-     * @var \Closure
+     * @var Verifiable
      */
-    private $closure;
+    private $user;
 
     public function __construct(VerificationCodesRepository $repo)
     {
         $this->repo = $repo;
+        $this->user = Auth::user();
     }
 
-    //akcia kt. je zabezpecena, sa zavola 2x, (user napr klikne 2x na download faktury)
-
-    public function verify(Verifiable $verifiable, \Closure $closure)
+    public function verify($action, $redirectTo, \Closure $closure = null)
     {
-        if(config('verifications.enabled') && $this->shouldVerify($verifiable)) {
-            $this->generateCodeAndSend($verifiable);
-            $this->closure = $closure;
+        if ($this->shouldVerify($action)) {
+            $this->generateCodeAndSend($action);
 
-            return redirect()->route('brackets/verifications/show');        //sem dat redirect route ako parameter
+            return redirect()->route('brackets/verifications/show?redirectTo='.$redirectTo);
+        }
+
+        if (is_null($closure)) {
+            return true;
         }
 
         return $closure();
     }
 
-    private function shouldVerify(Verifiable $verifiable): bool
+    public function shouldVerify($action): bool
     {
-        $entities = array_merge(config('verifications.default'), config('verifications.2fa'));
-
-        foreach($entities as $entity) {
-            if($verifiable instanceof $entity['model']) {
-                return ($entity['enabled'] == 'forced') || ($entity['enabled'] == 'optional' && auth()->user()->login_verification);
-            }
-        }
-
-        return false;
+        return config('verifications.enabled') && $this->getUser()->isVerificationEnabled($action) && !$this->getUser()->isActionVerifiedAndNonExpired($action);
     }
 
     /**
      * @param Verifiable $verifiable
-     * @return mixed
+     * @return bool
      * @throws \Exception
      */
-    public function generateCodeAndSend(Verifiable $verifiable)
+    public function generateCodeAndSend($action) : bool
     {
         $code = $this->generateCode();
 
-        $providers = app()->tagged($this->getChannel($verifiable));
+        /** @var ChannelProviderInterface $provider */
+        $provider = $this->getProvider($action);
 
-        foreach($providers as $provider) {
-            $provider->sendCode($verifiable, $code);
-        }
+        $this->repo->createCode($this->getUser(), $code);
 
-        return $this->repo->createCode($verifiable, $code);
+        $provider->sendCode($this->getUser(), $code);
+
+        return true;
     }
 
-    /**
-     * @param Verifiable $verifiable
-     * @return string
-     */
-    private function getChannel(Verifiable $verifiable): string
+    protected function getProvider($action)
     {
-        $entities = array_merge(config('verifications.default'), config('verifications.2fa'));
-        $verifiableEntity = collect($entities)->where('model', get_class($verifiable))->first();
+        $verifiableEntity = config('verifications.'.$action);
 
         if($verifiableEntity->channel == 'sms') {
-            return SMSProviderInterface::class;
+            return app(SMSProviderInterface::class);
         } else if($verifiableEntity->channel == 'email') {
-            return EmailProviderInterface::class;
+            return app(EmailProviderInterface::class);
         } else {
             throw new \InvalidArgumentException('');
         }
@@ -93,7 +84,7 @@ class Verification
      * @return string
      * @throws \Exception
      */
-    private function generateCode(): string
+    protected function generateCode(): string
     {
         //TODO: check if generated code doesn't exist ?
 
@@ -114,13 +105,11 @@ class Verification
 
     public function verifyCode(Verifiable $verifiable, $code): bool
     {
-        $isVerified = $this->repo->verifyCode($verifiable, $code);
+        return $this->repo->verifyCode($verifiable, $code);
+    }
 
-        if($isVerified) {
-            ($this->closure)();
-            $this->closure = null;
-        }
-
-        return $isVerified;
+    protected function getUser(): Verifiable
+    {
+        return $this->user;
     }
 }

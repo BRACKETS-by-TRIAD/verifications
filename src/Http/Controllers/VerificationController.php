@@ -16,6 +16,14 @@ class VerificationController extends Controller
      */
     private $verification;
 
+    /**
+     * @param Verification $verification
+     */
+    public function __construct(Verification $verification)
+    {
+        $this->verification = $verification;
+    }
+
     public function showVerificationForm($redirectTo)
     {
         return view("verification", compact($redirectTo));
@@ -28,11 +36,13 @@ class VerificationController extends Controller
      */
     public function verify(Request $request, Verifiable $verifiable)
     {
-        if(app(Verification::class)->verifyCode($verifiable, $request->get('code'))) {
+        if($this->verification->verifyCode($verifiable, $request->get('code'))) {
             $request->session()->flash('verifySuccess', [
                 'status' => 1,
                 'message' => __('verifications.code_verify_success')
             ]);
+
+            return redirect()->to($request->get('redirectTo'));
         }
 
         $request->session()->flash('verifyFailed', [

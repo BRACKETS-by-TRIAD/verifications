@@ -3,8 +3,6 @@
 
 namespace Brackets\Verifications;
 
-
-use Brackets\Verifications\Models\Verifiable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -17,7 +15,7 @@ class VerifyMiddleware
 
     public function __construct()
     {
-        $this->verification = new Verification();
+        $this->verification = app(Verification::class);
     }
 
     /**
@@ -29,21 +27,13 @@ class VerifyMiddleware
      */
     public function handle(Request $request, \Closure $next, $params)
     {
-        list($modelName, $action) = explode(":", $params);
+        list($action) = explode(":", $params);
 
-        if($this->shouldVerify($request, $action)) {
+        if ($this->verification->shouldVerify($request, $action)) {
 
-            $this->verification->generateCodeAndSend($request->route()->bindingFields()[0]);
-
-            return redirect('brackets/verifications/show');
+            return $this->verification->verify($action, url()->current());
         }
 
         return $next($request);
-    }
-
-    private function shouldVerify(Request $request, $action): bool
-    {
-        return ($request->session()->get($action.'valid_until') < Carbon::now())
-                || !auth()->user()->hasVerification($action);
     }
 }

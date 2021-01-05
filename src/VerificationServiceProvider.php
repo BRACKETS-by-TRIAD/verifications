@@ -63,11 +63,11 @@ class VerificationServiceProvider  extends ServiceProvider
         $channels = array_unique($allChannels);
 
         if(in_array('sms', $channels)) {
-            $this->app->tag([TwilioProvider::class], [SMSProviderInterface::class]);
+            $this->app->bind(SMSProviderInterface::class, TwilioProvider::class);
         }
 
         if(in_array('email', $channels)) {
-            $this->app->tag([EmailProvider::class], [EmailProviderInterface::class]);
+            $this->app->bind(EmailProviderInterface::class, EmailProvider::class);
         }
     }
 }
