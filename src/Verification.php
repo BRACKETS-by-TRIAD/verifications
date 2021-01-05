@@ -16,27 +16,28 @@ class Verification
      * @var VerificationCodesRepository
      */
     private $repo;
+    /**
+     * @var \Closure
+     */
+    private $closure;
 
     public function __construct(VerificationCodesRepository $repo)
     {
         $this->repo = $repo;
     }
 
-    /**
-     * @param Verifiable $verifiable
-     * @param String $redirectTo
-     * @return \Illuminate\Http\RedirectResponse
-     * @throws \Twilio\Exceptions\TwilioException
-     */
-    public function verify(Verifiable $verifiable, String $redirectTo = '/')
+    //akcia kt. je zabezpecena, sa zavola 2x, (user napr klikne 2x na download faktury)
+
+    public function verify(Verifiable $verifiable, \Closure $closure)
     {
         if(config('verifications.enabled') && $this->shouldVerify($verifiable)) {
             $this->generateCodeAndSend($verifiable);
+            $this->closure = $closure;
 
-            return redirect()->route('brackets/verifications/show', ['redirectTo' => $redirectTo]);
+            return redirect()->route('brackets/verifications/show');        //sem dat redirect route ako parameter
         }
 
-        return redirect()->route($redirectTo);
+        return $closure();
     }
 
     private function shouldVerify(Verifiable $verifiable): bool
@@ -113,6 +114,13 @@ class Verification
 
     public function verifyCode(Verifiable $verifiable, $code): bool
     {
-        return $this->repo->verifyCode($verifiable, $code);
+        $isVerified = $this->repo->verifyCode($verifiable, $code);
+
+        if($isVerified) {
+            ($this->closure)();
+            $this->closure = null;
+        }
+
+        return $isVerified;
     }
 }

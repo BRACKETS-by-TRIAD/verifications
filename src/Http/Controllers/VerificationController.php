@@ -28,13 +28,11 @@ class VerificationController extends Controller
      */
     public function verify(Request $request, Verifiable $verifiable)
     {
-        if($this->verification->verifyCode($verifiable, $request->get('code'))) {
+        if(app(Verification::class)->verifyCode($verifiable, $request->get('code'))) {
             $request->session()->flash('verifySuccess', [
                 'status' => 1,
                 'message' => __('verifications.code_verify_success')
             ]);
-
-            return redirect()->route($request->get('redirectTo'));
         }
 
         $request->session()->flash('verifyFailed', [

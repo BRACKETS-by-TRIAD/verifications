@@ -53,6 +53,7 @@ class VerificationServiceProvider  extends ServiceProvider
 
         if(config('verifications.enabled')) {
             $this->bindProviders();
+            $this->app->singleton(Verification::class);
         }
     }
 

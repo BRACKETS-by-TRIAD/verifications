@@ -17,15 +17,14 @@
                             <div class="auth-body">
                                 @include('brackets/admin-auth::admin.auth.includes.messages')
                                 <div class="form-group">
-                                    <label for="password">@lang('verifications.verification_code')</label>
+                                    <label for="code">@lang('verifications.verification_code')</label>
                                     <div class="input-group input-group--custom">
                                         <div class="input-group-addon"><i class="input-icon input-icon--lock"></i></div>
-                                        <input type="password" class="form-control" id="code" name="code" placeholder="{{ trans('verifications.verification_code') }}">
+                                        <input type="text" class="form-control" id="code" name="code" placeholder="{{ trans('verifications.verification_code') }}">
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <input type="hidden" name="redirectTo" value="{{ $redirectTo }}">
                                     <button type="submit" class="btn btn-primary btn-block btn-spinner">
                                         @lang('verifications.verify')
                                     </button>
