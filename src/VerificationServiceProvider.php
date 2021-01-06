@@ -12,6 +12,8 @@ use Brackets\Verifications\Commands\Add2faCommand;
 use Brackets\Verifications\Commands\AddEmailCommand;
 use Brackets\Verifications\Commands\AddPhoneCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
+use Brackets\Verifications\Middleware\VerifyMiddleware;
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
@@ -50,7 +52,8 @@ class VerificationServiceProvider  extends ServiceProvider
      */
     public function register()
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/verifications-routes.php');
+        $this->loadRoutesFrom(__DIR__ . '/../routes/verification-routes.php');
+        $this->app->make(Router::class)->aliasMiddleware('verifications.verify', VerifyMiddleware::class);
 
         if(Config::get('verifications.enabled')) {
             $this->bindProviders();
@@ -60,14 +63,13 @@ class VerificationServiceProvider  extends ServiceProvider
 
     private function bindProviders()
     {
-        $allChannels = array_values(Config::get('verifications.actions'))['channel'];
-        $channels = array_unique($allChannels);
+        $channelsCollection = collect(array_values(Config::get('verifications.actions')))->pluck('channel')->unique();
 
-        if(in_array('sms', $channels)) {
+        if($channelsCollection->contains('sms')) {
             $this->app->bind(SMSProviderInterface::class, TwilioProvider::class);
         }
 
-        if(in_array('email', $channels)) {
+        if($channelsCollection->contains('email')) {
             $this->app->bind(EmailProviderInterface::class, EmailProvider::class);
         }
     }

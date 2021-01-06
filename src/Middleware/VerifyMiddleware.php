@@ -1,8 +1,9 @@
 <?php
 
 
-namespace Brackets\Verifications;
+namespace Brackets\Verifications\Middleware;
 
+use Brackets\Verifications\Verification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -27,13 +28,13 @@ class VerifyMiddleware
      */
     public function handle(Request $request, \Closure $next, $params)
     {
-        list($middleware, $action) = explode(":", $params);
+        list($action) = explode(":", $params);
+//
+//        if ($this->verification->verify($action, url()->current())) {
+//
+//            return redirect()->refresh();
+//        }
 
-        if ($this->verification->shouldVerify($action)) {
-
-            return $this->verification->verify($action, url()->current());
-        }
-
-        return $next($request);
+        return $this->verification->verify($action, url()->current(), $next);
     }
 }

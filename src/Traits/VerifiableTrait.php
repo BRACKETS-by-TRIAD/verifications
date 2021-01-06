@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Session;
 
 trait VerifiableTrait
 {
-    public function bootVerifiableTrait()
+    public static function bootVerifiableTrait()
     {
-        $this->loadVerificationsForUser();
+        (new static)->loadVerificationsForUser();
     }
 
     public function isActionVerifiedAndNonExpired(string $action): bool
@@ -28,9 +28,9 @@ trait VerifiableTrait
     {
         if (!Session::has('verifications')) {
             $usersVerifications = VerificationCode::where('verifiable_type', get_class($this))
-                                                  ->where('verifiable_id', $this->getKey())
-                                                  ->where('verifies_until', '>', Carbon::now())
-                                                  ->get();
+                                                ->where('verifiable_id', $this->getKey())
+                                                ->where('verifies_until', '>', Carbon::now())
+                                                ->get();
 
             Session::put('verifications', $usersVerifications);
         }

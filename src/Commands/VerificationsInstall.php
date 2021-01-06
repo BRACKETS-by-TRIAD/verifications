@@ -47,11 +47,11 @@ class VerificationsInstall extends Command
     private function publishConfig()
     {
         if(!File::exists(config_path('verifications.php'))) {
-            File::copy('config/verifications.php', config_path('verifications.php'));
+            File::copy(__DIR__ . '/../../config/verifications.php', config_path('verifications.php'));
         }
 
         if(!File::exists(config_path('twilio.php'))) {
-            File::copy('config/twilio.php', config_path('twilio.php'));
+            File::copy(__DIR__ . '/../../config/twilio.php', config_path('twilio.php'));
         }
     }
 }
