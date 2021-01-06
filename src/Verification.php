@@ -9,6 +9,7 @@ use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Illuminate\Container\Container;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -33,21 +34,21 @@ class Verification
 
     /**
      * @param string $action
-     * @param string $redirectToUrl
+     * @param Request $request
      * @param \Closure|null $closure
-     * @return bool|\Illuminate\Http\RedirectResponse|mixed
-     * @throws \Exception
+     * @return bool|mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function verify(string $action, string $redirectToUrl, \Closure $closure = null)
+    public function verify(string $action, Request $request, \Closure $closure = null)
     {
         if($this->shouldVerify($action)) {
             $this->generateCodeAndSend($action);
 
             return Container::getInstance()->make('redirect')
-                            ->route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectToUrl]);
+                            ->route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $request->url()]);
         }
 
-        return is_null($closure) ? true : $closure();
+        return is_null($closure) ? true : $closure($request);
     }
 
     /**
