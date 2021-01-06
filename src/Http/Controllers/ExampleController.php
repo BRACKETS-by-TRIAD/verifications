@@ -25,9 +25,6 @@ class ExampleController
         });
     }
 
-
-
-
     // 2.
 
     // GET

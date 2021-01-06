@@ -45,7 +45,7 @@ trait VerifiableTrait
         if (Config::get('verifications.'.$action.'.enabled') == 'optional') {
             if (method_exists('isVerificationRequired', $this)) {
                 return $this->isVerificationRequired($action);
-            } elseif ($this->$action === true) {
+            } elseif ($this->{$action}) {
                 return true;
             } else {
                 return false;
