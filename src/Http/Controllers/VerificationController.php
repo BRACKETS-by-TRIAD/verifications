@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 
 class VerificationController extends Controller
 {
@@ -24,9 +25,12 @@ class VerificationController extends Controller
         $this->verification = $verification;
     }
 
-    public function showVerificationForm($redirectTo)
+    public function showVerificationForm(Request $request)
     {
-        return view("verification", compact($redirectTo));
+        $redirectTo = $request->query('redirectTo');
+        $action_name = $request->query('action');
+
+        return View::make("verification", compact($redirectTo, $action_name));
     }
 
     /**
@@ -36,13 +40,13 @@ class VerificationController extends Controller
      */
     public function verify(Request $request, Verifiable $verifiable)
     {
-        if($this->verification->verifyCode($verifiable, $request->get('code'))) {
+        if($this->verification->verifyCode($verifiable, $request->get('action_name'), $request->get('code'))) {
             $request->session()->flash('verifySuccess', [
                 'status' => 1,
                 'message' => __('verifications.code_verify_success')
             ]);
 
-            return redirect()->to($request->get('redirectTo'));
+            return redirect()->route($request->get('redirectTo'));
         }
 
         $request->session()->flash('verifyFailed', [

@@ -12,6 +12,7 @@ use Brackets\Verifications\Commands\Add2faCommand;
 use Brackets\Verifications\Commands\AddEmailCommand;
 use Brackets\Verifications\Commands\AddPhoneCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
 class VerificationServiceProvider  extends ServiceProvider
@@ -51,15 +52,15 @@ class VerificationServiceProvider  extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__ . '/../routes/verifications-routes.php');
 
-        if(config('verifications.enabled')) {
+        if(Config::get('verifications.enabled')) {
             $this->bindProviders();
-            $this->app->singleton(Verification::class);
+//            $this->app->singleton(Verification::class);
         }
     }
 
     private function bindProviders()
     {
-        $allChannels = array_values(config('verifications.actions'))['channel'];
+        $allChannels = array_values(Config::get('verifications.actions'))['channel'];
         $channels = array_unique($allChannels);
 
         if(in_array('sms', $channels)) {

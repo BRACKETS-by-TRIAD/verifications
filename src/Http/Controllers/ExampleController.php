@@ -2,6 +2,7 @@
 
 
 use Brackets\Verifications\Verification;
+use Illuminate\Support\Facades\View;
 
 // TODO remove this class later
 class ExampleController
@@ -11,7 +12,7 @@ class ExampleController
     {
         $invoices = Invoice::paginate();
 
-        return view('invoices.indexInvoices')->withInvoices($invoices); // v indexInvoices smerujeme akciu na postDownloadInvoice
+        return View::make('invoices.indexInvoices')->withInvoices($invoices); // v indexInvoices smerujeme akciu na postDownloadInvoice
     }
 
     // 1.
@@ -33,12 +34,12 @@ class ExampleController
     public function autoDownloadInvoice(Invoice $invoice)
     {
         return (new Verification)->verify('download-invoice', '/invoices/autoDownloadInvoice/'.$invoice->id, function () use ($invoice){
-            return view('invoices.autoDownload')->withInvoice($invoice); // in invoices.autoDownload blade JS calls post ajax postDownloadInvoice
+            return View::make('invoices.autoDownload')->withInvoice($invoice); // in invoices.autoDownload blade JS calls post ajax postDownloadInvoice
         });
     }
 
     // POST
-    public function postDownloadInvoice(Invoice $invoice)
+    public function postDownloadInvoice2(Invoice $invoice)
     {
         return (new Verification)->verify('download-invoice', '/invoices/autoDownloadInvoice/'.$invoice->id, function() use ($invoice) {
             return $invoice->download();
@@ -55,12 +56,12 @@ class ExampleController
     public function showDownloadInvoice(Invoice $invoice)
     {
         return (new Verification)->verify('download-invoice','/invoices/showDownloadInvoice/'.$invoice->id, function () use ($invoice){
-            return view('invoices.showDownloadInvoice')->withInvoice($invoice); // in invoices.autoDownload blade there is a button which downloads an invoice
+            return View::make('invoices.showDownloadInvoice')->withInvoice($invoice); // in invoices.autoDownload blade there is a button which downloads an invoice
         });
     }
 
     // POST
-    public function postDownloadInvoice(Invoice $invoice)
+    public function postDownloadInvoice3(Invoice $invoice)
     {
         return (new Verification)->verify('download-invoice','/invoices/showDownloadInvoice/'.$invoice->id, function() use ($invoice) {
             return $invoice->download();
@@ -72,7 +73,7 @@ class ExampleController
     // 4.
 
     // POST s middlewarom "verifications.verify:download-invoice"
-    public function postDownloadInvoice(Invoice $invoice)
+    public function postDownloadInvoice4(Invoice $invoice)
     {
         return $invoice->download();
     }

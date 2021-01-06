@@ -10,7 +10,7 @@ interface Verifiable
 
     public function getEmailAttribute(): string;
 
-    public function isActionVerifiedAndNonExpired(): bool;
+    public function isActionVerifiedAndNonExpired($action): bool;
 
-    public function isVerificationEnabled($action): bool
+    public function isVerificationEnabled($action): bool;       // based on optional config setup
 }

@@ -13,9 +13,9 @@ class VerifyMiddleware
      */
     private $verification;
 
-    public function __construct()
+    public function __construct(Verification $verification)
     {
-        $this->verification = app(Verification::class);
+        $this->verification = $verification;//app(Verification::class);
     }
 
     /**
@@ -27,9 +27,9 @@ class VerifyMiddleware
      */
     public function handle(Request $request, \Closure $next, $params)
     {
-        list($action) = explode(":", $params);
+        list($middleware, $action) = explode(":", $params);
 
-        if ($this->verification->shouldVerify($request, $action)) {
+        if ($this->verification->shouldVerify($action)) {
 
             return $this->verification->verify($action, url()->current());
         }

@@ -6,6 +6,7 @@ namespace Brackets\Verifications\Channels;
 
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
+use Illuminate\Support\Facades\Config;
 use Twilio\Rest\Client;
 
 class TwilioProvider implements SMSProviderInterface
@@ -19,9 +20,9 @@ class TwilioProvider implements SMSProviderInterface
 
     public function __construct()
     {
-        $account_sid = config('twilio.account_sid');
-        $auth_token = config('twilio.auth_token');
-        $this->twilio_number = config('twilio.twilio_number');
+        $account_sid = Config::get('twilio.account_sid');
+        $auth_token = Config::get('twilio.auth_token');
+        $this->twilio_number = Config::get('twilio.twilio_number');
 
         $this->twilioClient = new Client($account_sid, $auth_token);
     }

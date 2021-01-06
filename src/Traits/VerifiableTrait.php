@@ -1,39 +1,48 @@
 <?php
 
-
 namespace Brackets\Verifications\Traits;
 
 
-use Brackets\Verifications\Models\Verifiable;
+use Brackets\Verifications\Models\VerificationCode;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 
 trait VerifiableTrait
 {
-
     public function bootVerifiableTrait()
     {
         $this->loadVerificationsForUser();
     }
 
-    public function isActionVerifiedAndNonExpired($action): bool
+    public function isActionVerifiedAndNonExpired(string $action): bool
     {
-        return Session::has('verifications'.$action) && Carbon::parse(Session::get('verifications'.$action.'.expires_at')) > Carbon::now();
+        $actionSessions = Session::get('verifications')->filter(function($item) use ($action) {
+            return (data_get($item, 'action') == $action) && (Carbon::parse(data_get($item, 'verifies_until')) > Carbon::now());
+        });
+
+        return $actionSessions > 0;
     }
 
     protected function loadVerificationsForUser()
     {
         if (!Session::has('verifications')) {
-            // TODO loadnut z DB to pole
-            // Session::put()
+            $usersVerifications = VerificationCode::where('verifiable_type', get_class($this))
+                                                  ->where('verifiable_id', $this->getKey())
+                                                  ->where('verifies_until', '>', Carbon::now())
+                                                  ->get();
+
+            Session::put('verifications', $usersVerifications);
         }
     }
 
     public function isVerificationEnabled($action): bool
     {
-        if (config('verifications.'.$action.'.enabled') == 'forced') {
+        if (Config::get('verifications.'.$action.'.enabled') == 'forced') {
             return true;
         }
 
-        if (config('verifications.'.$action.'.enabled') == 'optional') {
+        if (Config::get('verifications.'.$action.'.enabled') == 'optional') {
             if (method_exists('isVerificationRequired', $this)) {
                 return $this->isVerificationRequired($action);
             } elseif ($this->$action === true) {
