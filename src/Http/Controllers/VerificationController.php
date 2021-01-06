@@ -4,13 +4,14 @@
 namespace Brackets\Verifications\Http\Controllers;
 
 
-use App\Http\Controllers\Controller;
-use Brackets\Verifications\Models\Verifiable;
+use Illuminate\Container\Container;
+use Illuminate\Routing\Controller as BaseController;
 use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 
-class VerificationController extends Controller
+class VerificationController extends BaseController
 {
     /**
      * @var Verification
@@ -27,32 +28,33 @@ class VerificationController extends Controller
 
     public function showVerificationForm(Request $request)
     {
-        $redirectTo = $request->query('redirectTo');
+        $redirectToUrl = $request->query('redirectToUrl');
         $action_name = $request->query('action');
 
-        return View::make("verification", compact($redirectTo, $action_name));
+        return View::make("brackets/verifications::verification", ['redirectToUrl' => $redirectToUrl, 'action_name' => $action_name]);
     }
 
     /**
      * @param Request $request
-     * @param Verifiable $verifiable
-     * @return \Illuminate\Http\RedirectResponse
+     * @return mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function verify(Request $request, Verifiable $verifiable)
+    public function verify(Request $request)
     {
-        if($this->verification->verifyCode($verifiable, $request->get('action_name'), $request->get('code'))) {
+        if($this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
+
             $request->session()->flash('verifySuccess', [
                 'status' => 1,
-                'message' => __('verifications.code_verify_success')
+                'message' => trans('brackets/verifications::verifications.code_verify_success')
             ]);
 
-            return redirect()->route($request->get('redirectTo'));
+            return Container::getInstance()->make('redirect')->to($request->get('redirectToUrl'));
         }
 
         $request->session()->flash('verifyFailed', [
-            'message' => __('verifications.code_verify_failed')
+            'message' => trans('brackets/verifications::verifications.code_verify_failed')
         ]);
 
-        return redirect()->back();
+        return Container::getInstance()->make('redirect')->back();
     }
 }

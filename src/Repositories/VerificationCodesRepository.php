@@ -36,20 +36,21 @@ class VerificationCodesRepository
                                             ->where('action_name', $action)
                                             ->where('code', $code)
                                             ->whereNull('used_at')
-                                            ->where('expire_at', '>', $now)
-                                            ->last();   // used last, if for some reason user refreshes the page and generate a new code for the same action
+                                            ->where('expires_at', '>', $now)
+                                            ->first();   //TODO: use last record, if for some reason user refreshes the page and generate a new code for the same action
 
-        if($verificationCode) {
-            $actionVerifiedMinutes = Config::get('verifications.actions.'. $action .'.verified_action_valid_minutes');
+        return $verificationCode ? $this->updateVerifiedCode($verificationCode, $action, $now) : false;
+    }
 
-            $verificationCode->used_at = $now;
-            $verificationCode->verifies_until = Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime();
+    private function updateVerifiedCode(VerificationCode $verificationCode, string $action, \DateTime $now): bool
+    {
+        $actionVerifiedMinutes = Config::get('verifications.actions.'. $action .'.verified_action_valid_minutes');
 
-            $verificationCode->save();
+        $verificationCode->used_at = $now;
+        $verificationCode->verifies_until = Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime();
 
-            return true;
-        }
+        $verificationCode->save();
 
-        return false;
+        return true;
     }
 }

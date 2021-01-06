@@ -1,10 +1,9 @@
 <?php
 
-
 namespace Brackets\Verifications\Middleware;
 
+
 use Brackets\Verifications\Verification;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VerifyMiddleware
@@ -16,7 +15,7 @@ class VerifyMiddleware
 
     public function __construct(Verification $verification)
     {
-        $this->verification = $verification;//app(Verification::class);
+        $this->verification = $verification;
     }
 
     /**
@@ -29,12 +28,7 @@ class VerifyMiddleware
     public function handle(Request $request, \Closure $next, $params)
     {
         list($action) = explode(":", $params);
-//
-//        if ($this->verification->verify($action, url()->current())) {
-//
-//            return redirect()->refresh();
-//        }
 
-        return $this->verification->verify($action, url()->current(), $next);
+        return $this->verification->verify($action, $request->url(), $next);
     }
 }

@@ -8,6 +8,7 @@ use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
+use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -32,28 +33,39 @@ class Verification
 
     /**
      * @param string $action
-     * @param $redirectTo
+     * @param string $redirectToUrl
      * @param \Closure|null $closure
-     * @return bool|mixed
+     * @return bool|\Illuminate\Http\RedirectResponse|mixed
      * @throws \Exception
      */
-    public function verify(string $action, $redirectTo, \Closure $closure = null)
+    public function verify(string $action, string $redirectToUrl, \Closure $closure = null)
     {
-        if ($this->shouldVerify($action)) {
+        if($this->shouldVerify($action)) {
             $this->generateCodeAndSend($action);
-//            dd('wat');
-            return redirect()->to('brackets/verifications/show');
+
+            return Container::getInstance()->make('redirect')
+                            ->route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectToUrl]);
         }
 
         return is_null($closure) ? true : $closure();
     }
 
-    public function shouldVerify(string $action): bool
+    /**
+     * @param Verifiable $verifiable
+     * @param string $action
+     * @param string $code
+     * @return bool
+     */
+    public function verifyCode(Verifiable $verifiable, string $action, string $code): bool
     {
-//        dd($this->getUser()->isActionVerifiedAndNonExpired($action));
+        return $this->repo->verifyCode($verifiable, $action, $code);
+    }
+
+    private function shouldVerify(string $action): bool
+    {
         return Config::get('verifications.enabled')
-            && $this->getUser()->isVerificationEnabled($action);
-//            && !$this->getUser()->isActionVerifiedAndNonExpired($action);
+            && $this->getUser()->isVerificationEnabled($action)
+            && !$this->getUser()->isActionVerifiedAndNonExpired($action);
     }
 
     /**
@@ -79,50 +91,53 @@ class Verification
      * @param string $action
      * @return mixed
      */
-    protected function getProvider(string $action)
+    private function getProvider(string $action)
     {
         $channel = Config::get('verifications.actions.'.$action .'.channel');
 
         switch($channel)
         {
             case 'sms':
-                return app(SMSProviderInterface::class);
+                return Container::getInstance()->make(SMSProviderInterface::class);
             case 'email';
-                return app(EmailProviderInterface::class);
+                return Container::getInstance()->make(EmailProviderInterface::class);
             default:
                 throw new \InvalidArgumentException('Unsupported channel type.');
         }
     }
 
     /**
+     * TODO: move to separate class + check if generated code doesn't exist ?
+     *
+     * @param string $action
      * @return string
      * @throws \Exception
      */
     protected function generateCode(string $action): string
     {
-        //TODO: check if generated code doesn't exist ?
+        $codeType = Config::get('verifications.actions.'. $action .'.code.type');
+        $codeLength = Config::get('verifications.actions.'. $action .'.code.length', 6);
 
-        switch(Config::get('verifications.actions.'. $action .'.code.type'))
+        switch($codeType)
         {
             case 'numeric':
-                $nbDigits = Config::get('verifications.actions.'. $action .'.code.length', 6);
+                $nbDigits = $codeLength;
                 $max = 10 ** $nbDigits - 1;
+
                 return strval(mt_rand(10 ** ($nbDigits - 1), $max));
 
             case 'string':
-                return Str::random(Config::get('verifications.actions.'. $action .'.code.length', 6));
+                return Str::random($codeLength);
 
             default:
                 throw new \Exception('Verification code type not specified!');
         }
     }
 
-    public function verifyCode(Verifiable $verifiable, string $action, string $code): bool
-    {
-        return $this->repo->verifyCode($verifiable, $action, $code);
-    }
-
-    protected function getUser(): Verifiable
+    /**
+     * @return Verifiable
+     */
+    private function getUser(): Verifiable
     {
         return $this->user;
     }

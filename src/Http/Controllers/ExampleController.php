@@ -1,5 +1,7 @@
 <?php
 
+namespace Brackets\Verifications\Http\Controllers;
+
 
 use Brackets\Verifications\Verification;
 use Illuminate\Support\Facades\View;

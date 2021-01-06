@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Brackets\Verifications\Models;
 
 
@@ -12,5 +11,5 @@ interface Verifiable
 
     public function isActionVerifiedAndNonExpired($action): bool;
 
-    public function isVerificationEnabled($action): bool;       // based on optional config setup
+    public function isVerificationEnabled($action): bool;       // use for optional config setup
 }

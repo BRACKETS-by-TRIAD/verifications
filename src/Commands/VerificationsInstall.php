@@ -1,11 +1,11 @@
 <?php
 
-
 namespace Brackets\Verifications\Commands;
 
 
 use Brackets\Verifications\VerificationServiceProvider;
 use Illuminate\Console\Command;
+use Illuminate\Container\Container;
 use Illuminate\Support\Facades\File;
 
 class VerificationsInstall extends Command
@@ -46,12 +46,12 @@ class VerificationsInstall extends Command
 
     private function publishConfig()
     {
-        if(!File::exists(config_path('verifications.php'))) {
-            File::copy(__DIR__ . '/../../config/verifications.php', config_path('verifications.php'));
+        if(!File::exists(Container::getInstance()->configPath('verifications.php'))) {
+            File::copy(__DIR__ . '/../../config/verifications.php', Container::getInstance()->configPath('verifications.php'));
         }
 
-        if(!File::exists(config_path('twilio.php'))) {
-            File::copy(__DIR__ . '/../../config/twilio.php', config_path('twilio.php'));
+        if(!File::exists(Container::getInstance()->configPath('twilio.php'))) {
+            File::copy(__DIR__ . '/../../config/twilio.php', Container::getInstance()->configPath('twilio.php'));
         }
     }
 }

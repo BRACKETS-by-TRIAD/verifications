@@ -13,6 +13,7 @@ use Brackets\Verifications\Commands\AddEmailCommand;
 use Brackets\Verifications\Commands\AddPhoneCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
 use Brackets\Verifications\Middleware\VerifyMiddleware;
+use Illuminate\Container\Container;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -41,7 +42,7 @@ class VerificationServiceProvider  extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__ . '/Database/migrations/' => database_path('migrations'),
+            __DIR__ . '/Database/migrations/' => Container::getInstance()->databasePath('migrations'),
         ], 'migrations');
     }
 
@@ -57,7 +58,6 @@ class VerificationServiceProvider  extends ServiceProvider
 
         if(Config::get('verifications.enabled')) {
             $this->bindProviders();
-//            $this->app->singleton(Verification::class);
         }
     }
 

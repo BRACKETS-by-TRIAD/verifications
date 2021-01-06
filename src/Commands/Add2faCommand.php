@@ -5,6 +5,7 @@ namespace Brackets\Verifications\Commands;
 
 
 use Illuminate\Console\Command;
+use Illuminate\Container\Container;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -58,7 +59,7 @@ class Add2faCommand extends Command
 
     private function getMigrationFile($migrationSuffix)
     {
-        $migrations = File::files(database_path('migrations/'));
+        $migrations = File::files(Container::getInstance()->databasePath('migrations/'));
 
         foreach($migrations as $migration) {
             if(Str::contains($migration->getFilename(), $migrationSuffix)) {
