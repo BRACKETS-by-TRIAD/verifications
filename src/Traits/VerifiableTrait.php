@@ -6,28 +6,26 @@ namespace Brackets\Verifications\Traits;
 use Brackets\Verifications\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
 
 trait VerifiableTrait
 {
-    public static function bootVerifiableTrait()
+    protected $activeVerifications;
+
+    protected function loadActiveVerifications()
     {
-        (new static)->loadVerificationsForUser();
+        if (is_null($this->activeVerifications)) {
+            $this->activeVerifications = VerificationCode::where('verifiable_type', get_class($this))
+                ->where('verifiable_id', $this->getKey())
+                ->where('verifies_until', '>', Carbon::now()->toDateTime())
+                ->get();
+        }
     }
 
-    protected function loadVerificationsForUser()
+    public function isVerificationActive(string $action): bool
     {
-        $usersVerifications = VerificationCode::where('verifiable_type', get_class($this))
-                                              ->where('verifiable_id', $this->getKey())        //FIXME: doesn't work with AdminUser??
-                                              ->where('verifies_until', '>', Carbon::now()->toDateTime())
-                                              ->get();
+        $this->loadActiveVerifications();
 
-        Session::put('verifications', $usersVerifications);
-    }
-
-    public function isActionVerifiedAndNonExpired(string $action): bool
-    {
-        $actionSessions = Session::get('verifications')->filter(function($item) use ($action) {
+        $actionSessions = $this->activeVerifications->filter(function($item) use ($action) {
             return (data_get($item, 'action') == $action) && (Carbon::parse(data_get($item, 'verifies_until')) > Carbon::now());
         });
 

@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 
 class VerificationController extends BaseController
@@ -48,13 +49,13 @@ class VerificationController extends BaseController
                 'message' => trans('brackets/verifications::verifications.code_verify_success')
             ]);
 
-            return Container::getInstance()->make('redirect')->to($request->get('redirectToUrl'));
+            return Redirect::to($request->get('redirectToUrl'));
         }
 
         $request->session()->flash('verifyFailed', [
             'message' => trans('brackets/verifications::verifications.code_verify_failed')
         ]);
 
-        return Container::getInstance()->make('redirect')->back();
+        return Redirect::back();
     }
 }
