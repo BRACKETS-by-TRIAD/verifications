@@ -4,6 +4,7 @@ namespace Brackets\Verifications\Middleware;
 
 
 use Brackets\Verifications\Verification;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class VerifyMiddleware
@@ -19,11 +20,11 @@ class VerifyMiddleware
     }
 
     /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * @param Request $request
+     * @param \Closure $next
+     * @param $params
+     * @return RedirectResponse|mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handle(Request $request, \Closure $next, $params)
     {
@@ -31,10 +32,6 @@ class VerifyMiddleware
 
         $response = $this->verification->verify($action, $request->url());
 
-        if ($response !== true) {
-            return $response;
-        }
-
-        return $next($request);
+        return $response instanceof RedirectResponse ? $response : $next($request);
     }
 }

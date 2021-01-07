@@ -37,7 +37,7 @@ class VerificationServiceProvider  extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'brackets/verifications');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'brackets/verifications');
 
-        if(class_exists("Dotunj\\LaraTwilio\\LaraTwilioServiceProvider")) {
+        if (class_exists("Dotunj\\LaraTwilio\\LaraTwilioServiceProvider")) {
             $this->app->register("Dotunj\\LaraTwilio\\LaraTwilioServiceProvider");
         }
 
@@ -56,7 +56,7 @@ class VerificationServiceProvider  extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/../routes/verification-routes.php');
         $this->app->make(Router::class)->aliasMiddleware('verifications.verify', VerifyMiddleware::class);
 
-        if(Config::get('verifications.enabled')) {
+        if (Config::get('verifications.enabled')) {
             $this->bindProviders();
         }
     }
@@ -65,11 +65,11 @@ class VerificationServiceProvider  extends ServiceProvider
     {
         $channelsCollection = collect(array_values(Config::get('verifications.actions')))->pluck('channel')->unique();
 
-        if($channelsCollection->contains('sms')) {
+        if ($channelsCollection->contains('sms')) {
             $this->app->bind(SMSProviderInterface::class, TwilioProvider::class);
         }
 
-        if($channelsCollection->contains('email')) {
+        if ($channelsCollection->contains('email')) {
             $this->app->bind(EmailProviderInterface::class, EmailProvider::class);
         }
     }

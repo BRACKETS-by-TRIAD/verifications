@@ -25,11 +25,7 @@ trait VerifiableTrait
     {
         $this->loadActiveVerifications();
 
-        $actionSessions = $this->activeVerifications->filter(function($item) use ($action) {
-            return (data_get($item, 'action') == $action) && (Carbon::parse(data_get($item, 'verifies_until')) > Carbon::now());
-        });
-
-        return count($actionSessions) > 0;
+        return $this->activeVerifications->where('action_name', $action)->count() > 0;
     }
 
     public function isVerificationEnabled($action): bool

@@ -62,7 +62,7 @@ class AddPhoneCommand extends Command
         $migrations = File::files(Container::getInstance()->databasePath('migrations/'));
 
         foreach($migrations as $migration) {
-            if(Str::contains($migration->getFilename(), $migrationSuffix)) {
+            if (Str::contains($migration->getFilename(), $migrationSuffix)) {
                 return $migration->getPath() . DIRECTORY_SEPARATOR . $migration->getFilename();
             }
         }

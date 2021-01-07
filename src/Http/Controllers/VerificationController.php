@@ -1,10 +1,8 @@
 <?php
 
-
 namespace Brackets\Verifications\Http\Controllers;
 
 
-use Illuminate\Container\Container;
 use Illuminate\Routing\Controller as BaseController;
 use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
@@ -42,7 +40,7 @@ class VerificationController extends BaseController
      */
     public function verify(Request $request)
     {
-        if($this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
+        if ($this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
 
             $request->session()->flash('verifySuccess', [
                 'status' => 1,

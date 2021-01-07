@@ -10,7 +10,6 @@ use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Illuminate\Container\Container;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
@@ -36,10 +35,9 @@ class Verification
 
     /**
      * @param string $action
-     * @param Request $request
+     * @param string $redirectTo
      * @param \Closure|null $closure
-     * @return bool|mixed
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @return bool|\Illuminate\Http\RedirectResponse|mixed
      * @throws \Exception
      */
     public function verify(string $action, string $redirectTo, \Closure $closure = null)
@@ -68,13 +66,13 @@ class Verification
     {
         return Config::get('verifications.enabled')
             && $this->getUser()->isVerificationEnabled($action)
-            && !$this->getUser()->isActionVerifiedAndNonExpired($action);
+            && !$this->getUser()->isVerificationActive($action);
     }
 
     /**
      * @param string $action
      * @return bool
-     * @throws \Exception
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function generateCodeAndSend(string $action) : bool
     {
@@ -92,7 +90,7 @@ class Verification
 
     /**
      * @param string $action
-     * @return mixed
+     * @return mixed|object
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     private function getProvider(string $action)

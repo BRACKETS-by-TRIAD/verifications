@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Brackets\Verifications\Repositories;
 
 
