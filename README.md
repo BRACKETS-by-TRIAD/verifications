@@ -5,9 +5,7 @@ Package used for verification of any kind of actions by sms/email generated code
 
 1. `composer require brackets/verifications`
 
-2. Register `Brackets\Verifications\VerificationServiceProvider::class,` in your `config/app.php`
-
-3. `php artisan verifications:install`
+2. `php artisan verifications:install`
 
 ## Configuration
 
