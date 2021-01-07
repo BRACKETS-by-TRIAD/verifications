@@ -2,7 +2,6 @@
 
 namespace Brackets\Verifications\Middleware;
 
-
 use Brackets\Verifications\Verification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;

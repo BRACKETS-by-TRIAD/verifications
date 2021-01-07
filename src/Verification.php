@@ -2,14 +2,12 @@
 
 namespace Brackets\Verifications;
 
-
 use Brackets\Verifications\Channels\Contracts\ChannelProviderInterface;
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Illuminate\Container\Container;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Str;
@@ -97,11 +95,10 @@ class Verification
     {
         $channel = Config::get('verifications.actions.'.$action .'.channel');
 
-        switch($channel)
-        {
+        switch ($channel) {
             case 'sms':
                 return Container::getInstance()->make(SMSProviderInterface::class);
-            case 'email';
+            case 'email':
                 return Container::getInstance()->make(EmailProviderInterface::class);
             default:
                 throw new \InvalidArgumentException('Unsupported channel type.');
@@ -120,8 +117,7 @@ class Verification
         $codeType = Config::get('verifications.actions.'. $action .'.code.type');
         $codeLength = Config::get('verifications.actions.'. $action .'.code.length', 6);
 
-        switch($codeType)
-        {
+        switch ($codeType) {
             case 'numeric':
                 $nbDigits = $codeLength;
                 $max = 10 ** $nbDigits - 1;

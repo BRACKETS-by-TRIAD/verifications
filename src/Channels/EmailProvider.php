@@ -3,7 +3,6 @@
 
 namespace Brackets\Verifications\Channels;
 
-
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 
@@ -20,7 +19,7 @@ class EmailProvider implements EmailProviderInterface
 
         try {
             //TODO
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             throw $ex;
         }
     }

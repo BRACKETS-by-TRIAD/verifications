@@ -3,7 +3,6 @@
 
 namespace Brackets\Verifications\Channels;
 
-
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Illuminate\Support\Facades\Config;
@@ -40,8 +39,7 @@ class TwilioProvider implements SMSProviderInterface
 //                'from' => $this->twilio_number,
 //                'body' => $code
 //            ]);
-
-        } catch(\Exception $ex) {
+        } catch (\Exception $ex) {
             throw $ex;
         }
     }

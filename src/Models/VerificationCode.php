@@ -2,7 +2,6 @@
 
 namespace Brackets\Verifications\Models;
 
-
 use Illuminate\Database\Eloquent\Model;
 
 class VerificationCode extends Model

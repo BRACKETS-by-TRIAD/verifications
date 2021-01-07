@@ -3,7 +3,6 @@
 
 namespace Brackets\Verifications;
 
-
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
 use Brackets\Verifications\Channels\TwilioProvider;
@@ -18,7 +17,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 
-class VerificationServiceProvider  extends ServiceProvider
+class VerificationServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap any application services.

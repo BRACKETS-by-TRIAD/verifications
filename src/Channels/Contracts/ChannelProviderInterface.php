@@ -3,7 +3,6 @@
 
 namespace Brackets\Verifications\Channels\Contracts;
 
-
 use Brackets\Verifications\Models\Verifiable;
 
 interface ChannelProviderInterface

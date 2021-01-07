@@ -2,14 +2,12 @@
 
 namespace Brackets\Verifications\Http\Controllers;
 
-
 use Brackets\Verifications\Verification;
 use Illuminate\Support\Facades\View;
 
 // TODO remove this class later
 class ExampleController
 {
-
     public function indexInvoices()
     {
         $invoices = Invoice::paginate();
@@ -22,7 +20,7 @@ class ExampleController
     // POST
     public function postDownloadInvoice(Invoice $invoice)
     {
-        return (new Verification)->verify('download-invoice', '/invoices', function() use ($invoice) {
+        return (new Verification)->verify('download-invoice', '/invoices', function () use ($invoice) {
             return $invoice->download();
         });
     }
@@ -32,7 +30,7 @@ class ExampleController
     // GET
     public function autoDownloadInvoice(Invoice $invoice)
     {
-        return (new Verification)->verify('download-invoice', '/invoices/autoDownloadInvoice/'.$invoice->id, function () use ($invoice){
+        return (new Verification)->verify('download-invoice', '/invoices/autoDownloadInvoice/'.$invoice->id, function () use ($invoice) {
             return View::make('invoices.autoDownload')->withInvoice($invoice); // in invoices.autoDownload blade JS calls post ajax postDownloadInvoice
         });
     }
@@ -40,7 +38,7 @@ class ExampleController
     // POST
     public function postDownloadInvoice2(Invoice $invoice)
     {
-        return (new Verification)->verify('download-invoice', '/invoices/autoDownloadInvoice/'.$invoice->id, function() use ($invoice) {
+        return (new Verification)->verify('download-invoice', '/invoices/autoDownloadInvoice/'.$invoice->id, function () use ($invoice) {
             return $invoice->download();
         });
     }
@@ -54,7 +52,7 @@ class ExampleController
     // GET
     public function showDownloadInvoice(Invoice $invoice)
     {
-        return (new Verification)->verify('download-invoice','/invoices/showDownloadInvoice/'.$invoice->id, function () use ($invoice){
+        return (new Verification)->verify('download-invoice', '/invoices/showDownloadInvoice/'.$invoice->id, function () use ($invoice) {
             return View::make('invoices.showDownloadInvoice')->withInvoice($invoice); // in invoices.autoDownload blade there is a button which downloads an invoice
         });
     }
@@ -62,7 +60,7 @@ class ExampleController
     // POST
     public function postDownloadInvoice3(Invoice $invoice)
     {
-        return (new Verification)->verify('download-invoice','/invoices/showDownloadInvoice/'.$invoice->id, function() use ($invoice) {
+        return (new Verification)->verify('download-invoice', '/invoices/showDownloadInvoice/'.$invoice->id, function () use ($invoice) {
             return $invoice->download();
         });
     }
@@ -76,5 +74,4 @@ class ExampleController
     {
         return $invoice->download();
     }
-
 }

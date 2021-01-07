@@ -2,7 +2,6 @@
 
 namespace Brackets\Verifications\Traits;
 
-
 use Brackets\Verifications\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;

@@ -2,7 +2,6 @@
 
 namespace Brackets\Verifications\Commands;
 
-
 use Brackets\Verifications\VerificationServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;

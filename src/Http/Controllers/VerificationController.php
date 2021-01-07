@@ -2,7 +2,6 @@
 
 namespace Brackets\Verifications\Http\Controllers;
 
-
 use Illuminate\Routing\Controller as BaseController;
 use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
@@ -41,7 +40,6 @@ class VerificationController extends BaseController
     public function verify(Request $request)
     {
         if ($this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
-
             $request->session()->flash('verifySuccess', [
                 'status' => 1,
                 'message' => trans('brackets/verifications::verifications.code_verify_success')
