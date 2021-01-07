@@ -1,5 +1,6 @@
 # Verifications
-Package for verifying sms/email generated codes, which would be used for two factor authentication or verifying any simple action in your app.
+Package used for verification of any kind of actions by sms/email generated codes. Although, would be used for two factor authentication.
+
 ## Installation
 
 1. `composer require brackets/verifications`
@@ -12,29 +13,31 @@ Package for verifying sms/email generated codes, which would be used for two fac
 
 ### Base
 Required configuration you need to setup is defined in `/config/verifications.php`. 
-As you can see, there is commented-out some example cases for it's usage. Please, keep strict key-names and values. 
+As you can see, there are some example cases for it's usage. Please, keep strict key-names and values. 
 ```.
-    'enabled' => true, // true, false                      // global package enable/disable for test purposes @ localhost
+    'enabled' => true, // true, false                       // global package enable/disable for test purposes @ localhost
     'actions' => [
-//        'invoices' => [
-//            'enabled' => 'forced,                         // forced, optional, false
-//            'model' => \App\Core\Models\Invoice::class,   // implements Verifiable
-//            'channel' => 'sms'                            // sms, email
-//        ]
-    ],
-    '2fa' => [
-//        'users' => [
-//            'enabled' => 'forced',                          // forced, optional, false
-//            'model' => \App\Core\Models\User::class,        // implements Verifiable
-//            'channel' => 'sms',                             // sms, email
-//        ],
-    ],
-
-    'code' => [
-        'type' => 'numeric',                // specifies type of verification code, it has to be set to 'numeric' or 'string'
-        'length' => 6,                      // specifies verification code length, set to 6 by default
-        'validity_length_minutes' => 10     // specifies length of code validity
-    ],
+        'withdraw-money' => [
+            'enabled' => 'optional',                        // forced, optional, false
+            'channel' => 'sms',                             // sms, email
+            'verified_action_valid_minutes' => 15,          // specifies how many minutes does it take to require another code verification
+            'code' => [
+                'type' => 'numeric',                        // specifies type of verification code, it has to be set to 'numeric' or 'string'
+                'length' => 6,                              // specifies verification code length, set to 6 by default
+                'validity_length_minutes' => 10,            // specifies length of code validity
+            ],
+        ],
+        '2fa_users' => [
+            'enabled' => 'optional',                        // forced, optional, false
+            'channel' => 'sms',                             // sms, email
+            'action_verified_in_minutes' => 15,             // specifies how many minutes does it take to require another code verification
+            'code' => [
+                'type' => 'numeric',                        // specifies type of verification code, it has to be set to 'numeric' or 'string'
+                'length' => 6,                              // specifies verification code length, set to 6 by default
+                'validity_length_minutes' => 10,            // specifies length of code validity
+            ],
+        ],
+    ]
 ```
 
 ### Twilio - SMS
@@ -51,17 +54,28 @@ More info here: https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio
 
 ## Usage
 
-Your entity should implement **Verifiable** interface, with generated method stubs.
+### GET request verification
+If your config is correctly setup, then all you need to do, is to follow common steps:
 
-**E.g.:**
+1. Your authenticated entity should implement **Verifiable** interface, with generated method stubs and use **VerifiableTrait**
+
+2. Your protected route should be guarded by **VerificationMiddleware** 
+* `...->middleware('verifications.verify:{action-name}');` - action name must be the same as a name in config
+
+**E.g.:**  
+Let's say, you want to verify the **withdraw-money** operation in your system. 
+
+1. Implement **Verifiable** interface with generated method stubs and use **VerifiableTrait** in your authenticated model entity.
+
 ```.
 class User extends Authenticatable implements Verifiable
 {
+    use VerifiableTrait;
     // ...
 
     public function getPhoneAttribute(): string
     {
-        return $this->owner->contact->phone;    // suitable usage
+        return $this->owner->contact->phone;    // you can use eager loading
     }
 
     public function getEmailAttribute(): string
@@ -73,6 +87,38 @@ class User extends Authenticatable implements Verifiable
 }
 ```
 
+2. Lastly, add **VerificationMiddleware** to your route 
+
+```.
+Route::get('/{account}/withdraw-money', 'MoneyController@withdrawMoney')
+            ->name('withdraw-money')
+            ->middleware('verifications.verify:withdraw-money');
+```
+
+### POST request verification
+Your entity should implement **Verifiable** interface, with generated method stubs.
+
+**E.g.:**
+```.
+class User extends Authenticatable implements Verifiable
+{
+    // ...
+
+    public function getPhoneAttribute(): string
+    {
+        return $this->owner->contact->phone;    // you can use eager loading
+    }
+
+    public function getEmailAttribute(): string
+    {
+        return $this->email;
+    }
+    
+    // ...
+}
+```
+
+### Generating attributes
 If you need to insert **phone_number**/**email** to your table, you can use these commands, to generate migration and insert attributes:
 
 1. Adding email - `php artisan verifications:add-email {table_name}`
@@ -105,6 +151,11 @@ command, which generates migration and call migrate:
 
 
 **php artisan verifications:add-2fa {table_name}** => e.g.: `php artisan verifications:add-2fa users`
+
+### Adding other notification channel
+If you need to send verification codes with different channel, you need to implement it.
+
+...TBD...
 
 ### Views
 TBD - craftable admin-auth generating..
