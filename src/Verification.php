@@ -42,15 +42,15 @@ class Verification
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @throws \Exception
      */
-    public function verify(string $action, Request $request, \Closure $closure = null)
+    public function verify(string $action, string $redirectTo, \Closure $closure = null)
     {
         if ($this->shouldVerify($action)) {
             $this->generateCodeAndSend($action);
 
-            return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $request->url()]);
+            return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectTo]);
         }
 
-        return is_null($closure) ? true : $closure($request);
+        return is_null($closure) ? true : $closure();
     }
 
     /**

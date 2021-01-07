@@ -29,6 +29,12 @@ class VerifyMiddleware
     {
         list($action) = explode(":", $params);
 
-        return $this->verification->verify($action, $request, $next);
+        $response = $this->verification->verify($action, $request->url());
+
+        if ($response !== true) {
+            return $response;
+        }
+
+        return $next($request);
     }
 }
