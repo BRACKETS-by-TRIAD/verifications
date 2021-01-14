@@ -33,16 +33,10 @@ trait VerifiableTrait
             return true;
         }
 
-        if (Config::get('verifications.'.$action.'.enabled') == 'optional') {       //TODO: use-case needs to be discussed
-            if (method_exists('isVerificationRequired', $this)) {
-                return $this->isVerificationRequired($action);
-            } elseif ($this->{$action}) {
-                return true;
-            } else {
-                return false;
-            }
+        if (method_exists('isVerificationRequired', $this)) {
+            return $this->isVerificationRequired($action);
+        } else {
+            return false;
         }
-
-        return false;
     }
 }

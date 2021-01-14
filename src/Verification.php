@@ -5,12 +5,12 @@ namespace Brackets\Verifications;
 use Brackets\Verifications\Channels\Contracts\ChannelProviderInterface;
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
+use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 class Verification
@@ -25,10 +25,14 @@ class Verification
      */
     private $user;
 
-    public function __construct(VerificationCodesRepository $repo)
+    /** @var GeneratorInterface */
+    private $generator;
+
+    public function __construct(VerificationCodesRepository $repo, GeneratorInterface $generator)
     {
         $this->repo = $repo;
         $this->user = Auth::user();
+        $this->generator = $generator;
     }
 
     /**
@@ -63,6 +67,7 @@ class Verification
     private function shouldVerify(string $action): bool
     {
         return Config::get('verifications.enabled')
+            && !is_null($this->getUser())
             && $this->getUser()->isVerificationEnabled($action)
             && !$this->getUser()->isVerificationActive($action);
     }
@@ -86,11 +91,6 @@ class Verification
         return true;
     }
 
-    /**
-     * @param string $action
-     * @return mixed|object
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
     private function getProvider(string $action)
     {
         $channel = Config::get('verifications.actions.'.$action .'.channel');
@@ -105,31 +105,13 @@ class Verification
         }
     }
 
-    /**
-     * TODO: move to separate class + check if generated code doesn't exist ?
-     *
-     * @param string $action
-     * @return string
-     * @throws \Exception
-     */
     protected function generateCode(string $action): string
     {
         $codeType = Config::get('verifications.actions.'. $action .'.code.type');
         $codeLength = Config::get('verifications.actions.'. $action .'.code.length', 6);
 
-        switch ($codeType) {
-            case 'numeric':
-                $nbDigits = $codeLength;
-                $max = 10 ** $nbDigits - 1;
+        return $this->generator->generate($codeType, $codeLength);
 
-                return strval(mt_rand(10 ** ($nbDigits - 1), $max));
-
-            case 'string':
-                return Str::random($codeLength);
-
-            default:
-                throw new \Exception('Verification code type not specified!');
-        }
     }
 
     /**
