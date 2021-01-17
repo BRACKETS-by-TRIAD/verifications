@@ -7,6 +7,7 @@ use Brackets\Verifications\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class VerificationCodesRepository
 {
@@ -35,7 +36,8 @@ class VerificationCodesRepository
                                             ->where('code', $code)
                                             ->whereNull('used_at')
                                             ->where('expires_at', '>', $now)
-                                            ->first();   //TODO: use last record, if for some reason user refreshes the page and generate a new code for the same action
+                                            ->orderBy('created_at', 'desc') // use last record, if for some reason user refreshes the page and generate a new code for the same action
+                                            ->first();
 
         return $verificationCode ? $this->updateVerifiedCode($verificationCode, $action, $now) : false;
     }
@@ -44,8 +46,12 @@ class VerificationCodesRepository
     {
         $actionVerifiedMinutes = Config::get('verifications.actions.'. $action .'.verified_action_valid_minutes');
 
+        if (Config::get('verifications.'.$action.'.keep_verified_during_session')) {
+            $actionVerifiedMinutes = Session::all();
+        }
+
+        $verificationCode->verifies_until = Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime() ?? null;
         $verificationCode->used_at = $now;
-        $verificationCode->verifies_until = Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime();
 
         $verificationCode->save();
 

@@ -1,5 +1,5 @@
 # Verifications
-Package used for verification of any kind of actions by sms/email generated codes. Although, would be used for two factor authentication.
+Package used for verification of any kind of actions by sms/email generated codes. Although, would be used for Two-Factor authentication.
 
 ## Installation
 
@@ -40,7 +40,7 @@ If you would like to protect some GET routes:
 2. your protected route should be guarded by **VerificationMiddleware** 
 * `...->middleware('verifications.verify:{action-name}');` - action name must be the same as a name in config
 
-Note: If you need to insert **phone_number**/**email** attributes to your users table, you can use artisan commands `verifications:add-email` and/or `verifications:add-phone`.
+Note: If you need to insert **phone_number**/**email** attributes to your table, you can use artisan commands `verifications:add-email {table-name}` and/or `verifications:add-phone {table-name}`.
 
 **Example:**  
 Let's say, you want to verify the **withdraw-money** operation in your system. 
@@ -83,16 +83,17 @@ TODO finish this
 
 ### Customizing view
 
-TODO popisat, ze ako customizovat view toho screenu, kde zadavas kod
+Base view of insert code form is stored in `verifications/resources/views/verification.blade.php`. If you want to modify this base template, you can override it, by creating 
+the same named view in your project folder `resources/views/brackets/verifications/verification.blade.php`.
 
 ### Conditional verification
 
-In some cases you may want to provide an option for your users to choose if the should verify some specific action.
+In some cases, you may want to provide an option for your users to choose if they should verify some specific action.
 Or maybe you want to allow users with some specific role/permission to skip the verification for some specific action.
-In these cases you just need to define the
+In these cases you just need to define the strictly named method **isVerificationRequired(string $action)**.
 
-```php
-
+**Example:**
+```.
 class User extends Authenticatable implements Verifiable
 {
     use VerifiableTrait;
@@ -114,7 +115,6 @@ class User extends Authenticatable implements Verifiable
         
         return true; 
     }
-
 ```
 
 ### Two factor authentication
@@ -154,8 +154,10 @@ Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'],
 ## Channels
 
 ## Email
+If you want to send verification codes via email, you need to set up
+mailer variables your project `.env` file:
 
-TODO napisat ze ako to fuguje cez email,
+Note: If you need to override email view, you can override it... TBD after testing
 
 ## Twilio - SMS
 If you need to use Twilio client for SMS notifications, you are 
@@ -171,5 +173,14 @@ More info here: https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio
 
 ## Custom channel providers
 
-TODO napisat ze ako sa to da extendovat
+If you need to use some other channel for verification, you need follow common steps:
 
+1. create contract for your channel, which extends `ChannelProviderInterface` 
+
+2. create provider for your channel, which implements your contract from the 1st step
+
+3. add binding
+
+4. override Verification@getProvider($action)
+
+TBD after testing

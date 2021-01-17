@@ -8,7 +8,7 @@ use Illuminate\Container\Container;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class AddEmailCommand extends Command
+class AddEmailAttributeCommand extends Command
 {
     /**
      * The name and signature of the console command.

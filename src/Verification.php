@@ -15,14 +15,10 @@ use Illuminate\Support\Facades\Auth;
 
 class Verification
 {
-    /**
-     * @var VerificationCodesRepository
-     */
+    /** @var VerificationCodesRepository */
     private $repo;
 
-    /**
-     * @var Verifiable
-     */
+    /**  @var Verifiable */
     private $user;
 
     /** @var GeneratorInterface */

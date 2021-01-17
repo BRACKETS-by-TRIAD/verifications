@@ -1,12 +1,12 @@
 <?php
 
-namespace Brackets\Verifications\CodeGenerator\Contracts;
+namespace Brackets\Verifications\CodeGenerator;
 
 use Illuminate\Support\Str;
 
 class SimpleGenerator implements GeneratorInterface
 {
-    public function generate($type, $length): string
+    public function generate(string $type, int $length): string
     {
         switch ($type) {
             case 'numeric':

@@ -8,21 +8,21 @@ use Illuminate\Container\Container;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
-class AddPhoneCommand extends Command
+class AddLoginVerifyAttributeCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'verifications:add-phone {table}';
+    protected $signature = 'verifications:add-login-verify {table}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Adds phone_number column to specified table';
+    protected $description = 'Adds login_verify_enabled column to specified table';
 
     /**
      * Execute the console command.
@@ -35,25 +35,25 @@ class AddPhoneCommand extends Command
 
         $table = $this->argument('table');
 
-        $this->call('make:migration', ['name' => 'add_phone_number_to_'. $table .'_table']);
+        $this->call('make:migration', ['name' => 'add_login_verify_enabled_to_'. $table .'_table']);
 
         $this->info('Modifying migration...');
 
         $this->strReplaceInFile(
-            $this->getMigrationFile('add_phone_number_to_'. $table .'_table'),
+            $this->getMigrationFile('add_login_verify_enabled_to_'. $table .'_table'),
             $this->getReplaceToUp($table),
             $this->getGeneratedUp($table)
         );
 
         $this->strReplaceInFile(
-            $this->getMigrationFile('add_phone_number_to_'. $table .'_table'),
+            $this->getMigrationFile('add_login_verify_enabled_to_'. $table .'_table'),
             $this->getReplaceToDown($table),
             $this->getGeneratedDown($table)
         );
 
         $this->call('migrate');
 
-        $this->info('Phone attribute has been successfully generated');
+        $this->info('Two factor authentication attribute has been successfully generated');
     }
 
     private function getMigrationFile($migrationSuffix)
@@ -89,7 +89,7 @@ class AddPhoneCommand extends Command
         return 'up()
     {
         Schema::table(\''. $table .'\', function (Blueprint $table) {
-            $table->string(\'phone_number\')->nullable();';
+            $table->boolean(\'login_verify_enabled\')->default(false);';
     }
 
     private function getReplaceToDown(string $table)
@@ -105,6 +105,6 @@ class AddPhoneCommand extends Command
         return 'down()
     {
         Schema::table(\''. $table .'\', function (Blueprint $table) {
-            $table->dropColumn([\'phone_number\']);';
+            $table->dropColumn([\'login_verify_enabled\']);';
     }
 }

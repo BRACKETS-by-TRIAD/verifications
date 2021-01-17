@@ -5,6 +5,8 @@ namespace Brackets\Verifications\Channels;
 
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
 
 class EmailProvider implements EmailProviderInterface
 {
@@ -18,7 +20,10 @@ class EmailProvider implements EmailProviderInterface
         $recipient = $verifiable->getEmailAttribute();
 
         try {
-            //TODO
+            Mail::send("brackets/verifications::email.verification-email", $code, function ($message) use ($recipient) {
+                $message->subject('Verification code' .' | '. Config::get('app.name'));
+                $message->to($recipient);
+            });
         } catch (\Exception $ex) {
             throw $ex;
         }

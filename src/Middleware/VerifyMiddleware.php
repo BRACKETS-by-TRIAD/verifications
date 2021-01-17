@@ -8,9 +8,7 @@ use Illuminate\Http\Request;
 
 class VerifyMiddleware
 {
-    /**
-     * @var Verification
-     */
+    /**  @var Verification */
     private $verification;
 
     public function __construct(Verification $verification)

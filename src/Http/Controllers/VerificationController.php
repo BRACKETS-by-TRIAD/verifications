@@ -11,9 +11,7 @@ use Illuminate\Support\Facades\View;
 
 class VerificationController extends BaseController
 {
-    /**
-     * @var Verification
-     */
+    /** @var Verification */
     private $verification;
 
     /**
