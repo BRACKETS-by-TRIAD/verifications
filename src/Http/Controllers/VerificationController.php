@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 
@@ -27,7 +28,30 @@ class VerificationController extends BaseController
         $redirectToUrl = $request->query('redirectToUrl');
         $action_name = $request->query('action');
 
-        return View::make("brackets/verifications::verification", ['redirectToUrl' => $redirectToUrl, 'action_name' => $action_name]);
+        list($channel, $contact) = array_values($this->getMappings($action_name));
+
+        return View::make("brackets/verifications::verification", compact($redirectToUrl, $action_name, $channel, $contact));
+    }
+
+    private function getMappings(string $action)
+    {
+        $channel = Config::get('verifications.actions.' .$action. '.channel');
+        $contact = '';
+
+        switch ($channel) {
+            case 'sms':
+                $contact = Auth::user()->getPhoneAttribute();
+                break;
+
+            case 'email':
+                $contact = Auth::user()->getEmailAttribute();
+                break;
+        }
+
+        return [
+            $channel => trans('brackets/verifications::verifications.' .$channel),
+            $contact => $contact
+        ];
     }
 
     public function sendNewCode(Request $request)

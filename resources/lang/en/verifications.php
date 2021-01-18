@@ -10,5 +10,9 @@ return [
     'code_verify_success' => 'Action has been successfully verified',
     'code_verify_failed' => 'Action verify has failed',
     'code_resend_success' => 'New code has been sent',
-    'code_resend_error' => 'New code was not sent'
+    'code_resend_error' => 'New code was not sent',
+
+    // used for code input hints
+    'sms' => 'telephone number',
+    'email' => 'e-mail'
 ];

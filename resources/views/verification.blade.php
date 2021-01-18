@@ -83,7 +83,7 @@
                                     <input type="text" class="form-control" id="code" name="code" placeholder="{{ trans('brackets/verifications::verifications.verification_code') }}">
                                 </div>
                             </div>
-                            <small>@lang('brackets/verifications::verifications.verification_code_subtitle2', ['channel' => 'telefónne číslo', 'contact' => '+421 *** *** *68'])</small>
+                            <small>@lang('brackets/verifications::verifications.verification_code_subtitle2', ['channel' => $channel, 'contact' => $contact])</small>
 
                             @if ($message = Session::get('success'))
                                 <div class="alert alert-success alert-block">

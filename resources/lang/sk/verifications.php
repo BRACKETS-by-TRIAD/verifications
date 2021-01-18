@@ -11,5 +11,9 @@ return [
     'code_verify_success' => 'Overenie kódom prebehlo úspešne',
     'code_verify_failed' => 'Overenie kódom zlyhalo',
     'code_resend_success' => 'Nový kód bol odoslaný',
-    'code_resend_error' => 'Odoslanie nového kódu zlyhalo'
+    'code_resend_error' => 'Odoslanie nového kódu zlyhalo',
+
+    // used for code input hints
+    'sms' => 'telefónne číslo',
+    'email' => 'e-mail'
 ];
