@@ -2,6 +2,7 @@
 
 namespace Brackets\Verifications\CodeGenerator;
 
+use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Illuminate\Support\Str;
 
 class SimpleGenerator implements GeneratorInterface
