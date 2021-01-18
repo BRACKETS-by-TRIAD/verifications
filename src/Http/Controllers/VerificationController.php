@@ -45,11 +45,11 @@ class VerificationController extends BaseController
 
         switch ($channel) {
             case 'sms':
-                $contact = Auth::user()->getPhoneAttribute() ?? '';
+                $contact = Auth::user()->getPhoneAttribute();
                 break;
 
             case 'email':
-                $contact = Auth::user()->getEmailAttribute() ?? '';
+                $contact = Auth::user()->getEmailAttribute();
                 break;
         }
 
