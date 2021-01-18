@@ -23,7 +23,7 @@ class TwilioProvider implements SMSProviderInterface
         $auth_token = Config::get('twilio.auth_token');
         $this->twilio_number = Config::get('twilio.twilio_number');
 
-//        $this->twilioClient = new Client($account_sid, $auth_token);      // commented in case of test purposes
+        $this->twilioClient = new Client($account_sid, $auth_token);      // commented in case of test purposes
     }
 
     /**
@@ -34,11 +34,12 @@ class TwilioProvider implements SMSProviderInterface
     public function sendCode(Verifiable $verifiable, string $code): void
     {
         try {
-            \Log::info('Your code is: '. $code);        // test purposes
-//            $this->twilioClient->messages->create($verifiable->getPhoneAttribute(), [
-//                'from' => $this->twilio_number,
-//                'body' => $code
-//            ]);
+//            \Log::info('Your code is: '. $code);        // test purposes
+
+            $this->twilioClient->messages->create($verifiable->getPhoneAttribute(), [
+                'from' => $this->twilio_number,
+                'body' => $code
+            ]);
         } catch (\Exception $ex) {
             throw $ex;
         }
