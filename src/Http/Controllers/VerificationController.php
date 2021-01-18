@@ -45,13 +45,11 @@ class VerificationController extends BaseController
 
         switch ($channel) {
             case 'sms':
-                $phoneNumber = Auth::user()->getPhoneAttribute();
-                $contact = substr($phoneNumber, 0, 3). substr($phoneNumber, -2);
+                $contact = $this->getMutedString(Auth::user()->getPhoneAttribute());
                 break;
 
             case 'email':
-                $email = Auth::user()->getEmailAttribute();
-                $contact = substr($email, 0, 3). substr($email, -5);
+                $contact = $this->getMutedString(Auth::user()->getEmailAttribute(), 3, 5);
                 break;
         }
 
@@ -59,6 +57,22 @@ class VerificationController extends BaseController
             $channel => trans('brackets/verifications::verifications.' .$channel),
             $contact => $contact
         ];
+    }
+
+    private function getMutedString(string $str, $firstCharactersCount = 3, $lastCharactersCount = 2)
+    {
+        $characters = str_split($str);
+        $result = '';
+
+        foreach ($characters as $key => $character) {
+            if ($key < $firstCharactersCount || $key > count($characters) - $lastCharactersCount) {
+                $result = $result . strval($character);
+            } else {
+                $result = $result . '*';
+            }
+        }
+
+        return $result;
     }
 
     public function sendNewCode(Request $request)
