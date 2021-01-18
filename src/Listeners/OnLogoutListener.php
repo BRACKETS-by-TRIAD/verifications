@@ -9,6 +9,6 @@ class OnLogoutListener
 {
     public function handle(Logout $event)
     {
-        Session::flush();
+        Session::forget('last_activity');
     }
 }

@@ -5,6 +5,7 @@
         "twilio/sdk": "^6.0",
         "illuminate/http":  "^7.0",
         "illuminate/auth":  "^7.0",
+        "illuminate/events":  "^7.0",
         "illuminate/support": "^7.0",
         "illuminate/database": "^7.0",
         "illuminate/console": "^7.0",
@@ -31,7 +32,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Brackets\\Verifications\\VerificationServiceProvider"
+                "Brackets\\Verifications\\VerificationServiceProvider",
+                "Brackets\\Verifications\\VerificationEventServiceProvider"
             ]
         }
     }
