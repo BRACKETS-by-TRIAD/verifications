@@ -30,10 +30,6 @@ class VerifyMiddleware
     {
         list($action) = explode(":", $params);
 
-        if (Config::get('verifications.actions.'. $action .'.keep_verified_during_session')) {
-            Session::put('last_activity', Carbon::now()->toDateTime());
-        }
-
         $response = $this->verification->verify($action, $request->url());
 
         return $response instanceof RedirectResponse ? $response : $next($request);

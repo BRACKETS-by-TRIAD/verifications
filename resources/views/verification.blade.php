@@ -2,6 +2,8 @@
 <html lang="sk|en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>@lang('brackets/verifications::verifications.verification_code')</title>
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -83,6 +85,20 @@
                             </div>
                             <small>@lang('brackets/verifications::verifications.verification_code_subtitle2', ['channel' => 'telefónne číslo', 'contact' => '+421 *** *** *68'])</small>
 
+                            @if ($message = Session::get('success'))
+                                <div class="alert alert-success alert-block">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @endif
+
+                            @if ($message = Session::get('error'))
+                                <div class="alert alert-danger alert-block">
+                                    <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <strong>{{ $message }}</strong>
+                                </div>
+                            @endif
+
                             <div class="form-group submit-group">
                                 <input type="hidden" name="redirectToUrl" value="{{ $redirectToUrl }}">
                                 <input type="hidden" name="action_name" value="{{ $action_name }}">
@@ -104,35 +120,21 @@
     </div>
 </div>
 
+
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-<script>
+<script type="text/javascript">
     $(document).ready(function() {
         $("#resendCodeBtn").click(function() {
-            //TODO
-            console.log('clicked');
-            $.ajax({
-                type: "POST",
-                url: {{ \Illuminate\Support\Facades\URL::route('brackets/verifications/resend') }},
-                success: function() {
-                    alert("code successfuly resent");
-                },
-                dataType: "json"
-            });
+            var xhr = new XMLHttpRequest();
 
-            {{--$.get({{ \Illuminate\Support\Facades\URL::route('brackets/verifications/verify') }}, function(res) {--}}
-            {{--    alert( "success" );--}}
-            {{--});--}}
-            // .done(function() {
-            //     alert( "second success" );
-            // })
-            //     .fail(function() {
-            //         alert( "error" );
-            //     })
-            //     .always(function() {
-            //         alert( "finished" );
-            //     });
+            xhr.open("POST", '{{ \Illuminate\Support\Facades\URL::route('brackets/verifications/resend') }}', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
+            xhr.send(JSON.stringify({
+                action_name: $("[name='action_name']").val()
+            }));
         });
     });
 </script>

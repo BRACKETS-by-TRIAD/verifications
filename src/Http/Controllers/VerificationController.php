@@ -32,16 +32,11 @@ class VerificationController extends BaseController
 
     public function sendNewCode(Request $request)
     {
-        if($this->verification->generateCodeAndSend($request->get('action_name'))) {
-            $request->session()->flash('resendSuccess', [
-                'status' => 1,
-//                'message' => trans('brackets/verifications::verifications.code_verify_success')
-            ]);
-        } else {
-            $request->session()->flash('resendFailed', [
-//                'message' => trans('brackets/verifications::verifications.code_verify_failed')
-            ]);
-        }
+        $this->verification->setUser(Auth::user());
+
+        return $this->verification->generateCodeAndSend($request->get('action_name'))
+            ? Redirect::to($request->url())->with('success', trans('brackets/verifications::verifications.code_resend_success'))
+            : Redirect::to($request->url())->with('error', trans('brackets/verifications::verifications.code_resend_error'));
     }
 
     /**
@@ -51,19 +46,8 @@ class VerificationController extends BaseController
      */
     public function verify(Request $request)
     {
-        if ($this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
-            $request->session()->flash('verifySuccess', [
-                'status' => 1,
-                'message' => trans('brackets/verifications::verifications.code_verify_success')
-            ]);
-
-            return Redirect::to($request->get('redirectToUrl'));
-        }
-
-        $request->session()->flash('verifyFailed', [
-            'message' => trans('brackets/verifications::verifications.code_verify_failed')
-        ]);
-
-        return Redirect::back();
+        return $this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))
+            ? Redirect::to($request->get('redirectToUrl'))->with('success', trans('brackets/verifications::verifications.code_verify_success'))
+            : Redirect::back()->with('error', trans('brackets/verifications::verifications.code_verify_failed'));
     }
 }

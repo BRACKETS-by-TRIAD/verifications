@@ -8,10 +8,12 @@ use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
+use Carbon\Carbon;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class Verification
 {
@@ -44,6 +46,10 @@ class Verification
             $this->generateCodeAndSend($action);
 
             return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectTo]);
+        }
+
+        if (Config::get('verifications.actions.'. $action .'.keep_verified_during_session')) {
+            Session::put('last_activity', Carbon::now()->toDateTime());
         }
 
         return is_null($closure) ? true : $closure();
@@ -116,5 +122,13 @@ class Verification
     private function getUser(): Verifiable
     {
         return $this->user;
+    }
+
+    /**
+     * @param Verifiable $verifiable
+     */
+    public function setUser(Verifiable $verifiable): void
+    {
+        $this->user = $verifiable;
     }
 }
