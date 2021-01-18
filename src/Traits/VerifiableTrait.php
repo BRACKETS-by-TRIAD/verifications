@@ -15,14 +15,16 @@ trait VerifiableTrait
 
     protected function loadActiveVerifications(string $action)
     {
-        if ($this->checkConfigForAction($action)) {
-            $this->activeVerifications->merge(VerificationCode::allFor($this)->whereNull('verifies_until')->whereNotNull('used_at')->get());
-        } else {
-            $this->activeVerifications->merge(VerificationCode::allFor($this)->where('verifies_until', '>', Carbon::now()->toDateTime())->get());
-        }
+        $newVerifications = $this->shouldKeepDuringSession($action)
+            ? VerificationCode::allFor($this)->whereNull('verifies_until')->whereNotNull('used_at')->get()
+            : VerificationCode::allFor($this)->where('verifies_until', '>', Carbon::now()->toDateTime())->get();
+
+        $this->activeVerifications = is_null($this->activeVerifications)
+            ? $newVerifications
+            : $this->activeVerifications->merge($newVerifications);
     }
 
-    private function checkConfigForAction(string $action): bool
+    private function shouldKeepDuringSession(string $action): bool
     {
         return (Config::get('verifications.actions.'.$action.'.keep_verified_during_session') === true)
             && Session::has('last_activity')
