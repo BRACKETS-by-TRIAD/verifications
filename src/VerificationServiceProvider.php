@@ -7,6 +7,8 @@ use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
 use Brackets\Verifications\Channels\TwilioProvider;
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
+use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
+use Brackets\Verifications\CodeGenerator\SimpleGenerator;
 use Brackets\Verifications\Commands\AddLoginVerifyAttributeCommand;
 use Brackets\Verifications\Commands\AddEmailAttributeCommand;
 use Brackets\Verifications\Commands\AddPhoneAttributeCommand;
@@ -68,6 +70,8 @@ class VerificationServiceProvider extends ServiceProvider
     private function bindProviders()
     {
         $channelsCollection = collect(array_values(Config::get('verifications.actions')))->pluck('channel')->unique();
+
+        $this->app->bind(GeneratorInterface::class, SimpleGenerator::class);
 
         if ($channelsCollection->contains('sms')) {
             $this->app->bind(SMSProviderInterface::class, TwilioProvider::class);
