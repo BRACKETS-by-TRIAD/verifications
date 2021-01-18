@@ -30,7 +30,12 @@ class VerificationController extends BaseController
 
         list($channel, $contact) = array_values($this->getMappings($action_name));
 
-        return View::make("brackets/verifications::verification", compact($redirectToUrl, $action_name, $channel, $contact));
+        return View::make("brackets/verifications::verification", [
+            'redirectToUrl' => $redirectToUrl,
+            'action_name' => $action_name,
+            'channel' => $channel,
+            'contact' => $contact
+        ]);
     }
 
     private function getMappings(string $action)
@@ -40,11 +45,11 @@ class VerificationController extends BaseController
 
         switch ($channel) {
             case 'sms':
-                $contact = Auth::user()->getPhoneAttribute();
+                $contact = Auth::user()->getPhoneAttribute() ?? '';
                 break;
 
             case 'email':
-                $contact = Auth::user()->getEmailAttribute();
+                $contact = Auth::user()->getEmailAttribute() ?? '';
                 break;
         }
 
