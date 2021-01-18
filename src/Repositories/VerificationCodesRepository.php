@@ -43,7 +43,9 @@ class VerificationCodesRepository
 
     private function updateVerifiedCode(VerificationCode $verificationCode, string $action, \DateTime $now): bool
     {
-        $actionVerifiedMinutes = Config::get('verifications.actions.'. $action .'.verified_action_valid_minutes');
+        $actionVerifiedMinutes = !Config::get('verifications.actions.'. $action .'.keep_verified_during_session')
+                                ? Config::get('verifications.actions.'. $action .'.verified_action_valid_minutes')
+                                : null;
 
         $verificationCode->verifies_until = $actionVerifiedMinutes ? Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime() : null;
         $verificationCode->used_at = $now;
