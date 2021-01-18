@@ -17,4 +17,10 @@ class VerificationCode extends Model
         'verifies_until',
         'used_at'
     ];
+
+    public function scopeAllFor($query, Verifiable $verifiable)
+    {
+        return $query->where('verifiable_type', get_class($verifiable))
+                     ->where('verifiable_id', $verifiable->getKey());
+    }
 }

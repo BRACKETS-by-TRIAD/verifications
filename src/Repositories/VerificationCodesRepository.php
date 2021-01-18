@@ -7,7 +7,6 @@ use Brackets\Verifications\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class VerificationCodesRepository
 {
@@ -46,11 +45,7 @@ class VerificationCodesRepository
     {
         $actionVerifiedMinutes = Config::get('verifications.actions.'. $action .'.verified_action_valid_minutes');
 
-        if (Config::get('verifications.'.$action.'.keep_verified_during_session')) {
-            $actionVerifiedMinutes = Session::all();
-        }
-
-        $verificationCode->verifies_until = Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime() ?? null;
+        $verificationCode->verifies_until = $actionVerifiedMinutes ? Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime() : null;
         $verificationCode->used_at = $now;
 
         $verificationCode->save();

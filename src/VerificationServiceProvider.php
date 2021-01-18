@@ -11,8 +11,11 @@ use Brackets\Verifications\Commands\AddLoginVerifyAttributeCommand;
 use Brackets\Verifications\Commands\AddEmailAttributeCommand;
 use Brackets\Verifications\Commands\AddPhoneAttributeCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
+use Brackets\Verifications\Listeners\OnLogoutListener;
 use Brackets\Verifications\Middleware\VerifyMiddleware;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -54,6 +57,8 @@ class VerificationServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__ . '/../routes/verification-routes.php');
         $this->app->make(Router::class)->aliasMiddleware('verifications.verify', VerifyMiddleware::class);
+
+        $this->app['events']->getListeners(Logout::class)->subscribe(OnLogoutListener::class);      //TODO: test if it works without EventServiceProvider
 
         if (Config::get('verifications.enabled')) {
             $this->bindProviders();

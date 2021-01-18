@@ -16,10 +16,10 @@ This can be achieved in the configuration file `/config/verifications.php`.
 
 As you can see, there are some example cases for it's usage. Please, keep strict key-names and values. 
 ```.
-    'enabled' => true,                                      // global package enable/disable for test purposes @ localhost
+    'enabled' => true,                                      // true/false - global package enable/disable for test purposes @ localhost
     'actions' => [
         'withdraw-money' => [
-            'enabled' => true,                              // truue/false
+            'enabled' => true,                              // true/false
             'channel' => 'sms',                             // sms, email
             'keep_verified_during_session' => false,        // if true, keeps verification valid while session exists
             'verified_action_valid_minutes' => 15,          // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action 
@@ -84,7 +84,7 @@ TODO finish this
 ### Customizing view
 
 Base view of insert code form is stored in `verifications/resources/views/verification.blade.php`. If you want to modify this base template, you can override it, by creating 
-the same named view in your project folder `resources/views/brackets/verifications/verification.blade.php`.
+the same named view in your project folder `resources/views/vendor/brackets/verifications/verification.blade.php`.
 
 ### Conditional verification
 
@@ -157,7 +157,20 @@ Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'],
 If you want to send verification codes via email, you need to set up
 mailer variables your project `.env` file:
 
-Note: If you need to override email view, you can override it... TBD after testing
+```.
+MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=2525
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=
+MAIL_FROM_ADDRESS=
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+Note: If you need to override email view, you can override it, by creating
+the same named view in your project folder `resources/views/vendor/brackets/verifications/email/verification-email.blade.php`.
+
 
 ## Twilio - SMS
 If you need to use Twilio client for SMS notifications, you are 

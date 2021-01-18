@@ -5,22 +5,26 @@ namespace Brackets\Verifications\Traits;
 use Brackets\Verifications\Models\VerificationCode;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 
 trait VerifiableTrait
 {
     protected $activeVerifications;
 
+    //TODO: needs refactor
     protected function loadActiveVerifications(string $action)
     {
         if (is_null($this->activeVerifications)) {
-            $this->activeVerifications = VerificationCode::where('verifiable_type', get_class($this))
-                                            ->where('verifiable_id', $this->getKey())
-                                            ->where(function($q) use ($action) {
-                                                if (!Config::get('verifications.'.$action.'.keep_verified_during_session')) {
-                                                    $q->where('verifies_until', '>', Carbon::now()->toDateTime());
-                                                }
-                                            })
-                                            ->get();
+            if (Config::get('verifications.'.$action.'.keep_verified_during_session')) {
+                if (Session::has('last_activity') && Session::get('last_activity') < Carbon::now()->addMinutes(Config::get('session.lifetime'))->toDateTime()) {
+                    $this->activeVerifications = VerificationCode::allFor($this)->whereNull('verifies_until')->whereNotNull('used_at')->get();
+                } else {
+                    $this->activeVerifications = collect([]);       // if session expired, user should verify action again
+                }
+            }
+            else {
+                $this->activeVerifications = VerificationCode::allFor($this)->where('verifies_until', '>', Carbon::now()->toDateTime())->get();
+            }
         }
     }
 
