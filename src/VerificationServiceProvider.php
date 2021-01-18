@@ -60,8 +60,6 @@ class VerificationServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__ . '/../routes/verification-routes.php');
         $this->app->make(Router::class)->aliasMiddleware('verifications.verify', VerifyMiddleware::class);
 
-//        $this->app['events']->getListeners(Logout::class)->subscribe(OnLogoutListener::class);      //TODO: test if it works without EventServiceProvider
-
         if (Config::get('verifications.enabled')) {
             $this->bindProviders();
         }

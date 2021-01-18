@@ -30,6 +30,20 @@ class VerificationController extends BaseController
         return View::make("brackets/verifications::verification", ['redirectToUrl' => $redirectToUrl, 'action_name' => $action_name]);
     }
 
+    public function sendNewCode(Request $request)
+    {
+        if($this->verification->generateCodeAndSend($request->get('action_name'))) {
+            $request->session()->flash('resendSuccess', [
+                'status' => 1,
+//                'message' => trans('brackets/verifications::verifications.code_verify_success')
+            ]);
+        } else {
+            $request->session()->flash('resendFailed', [
+//                'message' => trans('brackets/verifications::verifications.code_verify_failed')
+            ]);
+        }
+    }
+
     /**
      * @param Request $request
      * @return mixed

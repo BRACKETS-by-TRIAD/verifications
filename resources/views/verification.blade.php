@@ -110,10 +110,11 @@
 <script>
     $(document).ready(function() {
         $("#resendCodeBtn").click(function() {
+            //TODO
             console.log('clicked');
             $.ajax({
-                type: "GET",
-                url: {{ \Illuminate\Support\Facades\URL::route('brackets/verifications/verify') }},
+                type: "POST",
+                url: {{ \Illuminate\Support\Facades\URL::route('brackets/verifications/resend') }},
                 success: function() {
                     alert("code successfuly resent");
                 },
