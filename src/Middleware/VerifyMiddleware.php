@@ -3,11 +3,8 @@
 namespace Brackets\Verifications\Middleware;
 
 use Brackets\Verifications\Verification;
-use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
 
 class VerifyMiddleware
 {
