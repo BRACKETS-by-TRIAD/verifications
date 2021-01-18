@@ -4,26 +4,29 @@ namespace Brackets\Verifications\Traits;
 
 use Brackets\Verifications\Models\VerificationCode;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
 trait VerifiableTrait
 {
+    /** @var Collection */
     protected $activeVerifications;
 
-    //TODO: needs some refactor
     protected function loadActiveVerifications(string $action)
     {
-        if (Config::get('verifications.actions.'.$action.'.keep_verified_during_session') === true) {
-            if (Session::has('last_activity') && Session::get('last_activity') < Carbon::now()->addMinutes(Config::get('session.lifetime'))->toDateTime()) {
-                $this->activeVerifications += VerificationCode::allFor($this)->whereNull('verifies_until')->whereNotNull('used_at')->get();
-            } else {
-                $this->activeVerifications = collect([]);       // if session expired, user should verify action again
-            }
+        if ($this->checkConfigForAction($action)) {
+            $this->activeVerifications->merge(VerificationCode::allFor($this)->whereNull('verifies_until')->whereNotNull('used_at')->get());
+        } else {
+            $this->activeVerifications->merge(VerificationCode::allFor($this)->where('verifies_until', '>', Carbon::now()->toDateTime())->get());
         }
-        else {
-            $this->activeVerifications += VerificationCode::allFor($this)->where('verifies_until', '>', Carbon::now()->toDateTime())->get();
-        }
+    }
+
+    private function checkConfigForAction(string $action): bool
+    {
+        return (Config::get('verifications.actions.'.$action.'.keep_verified_during_session') === true)
+            && Session::has('last_activity')
+            && (Session::get('last_activity') < Carbon::now()->addMinutes(Config::get('session.lifetime'))->toDateTime());
     }
 
     public function isVerificationActive(string $action): bool
