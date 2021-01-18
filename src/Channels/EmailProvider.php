@@ -20,7 +20,7 @@ class EmailProvider implements EmailProviderInterface
         $recipient = $verifiable->getEmailAttribute();
 
         try {
-            Mail::send("brackets/verifications::email.verification-email", $code, function ($message) use ($recipient) {
+            Mail::send("brackets/verifications::email.verification-email", ['code' => $code], function ($message) use ($recipient) {
                 $message->subject('Verification code' .' | '. Config::get('app.name'));
                 $message->to($recipient);
             });

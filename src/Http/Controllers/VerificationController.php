@@ -2,12 +2,14 @@
 
 namespace Brackets\Verifications\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Routing\Controller as BaseController;
 use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
 class VerificationController extends BaseController
@@ -91,8 +93,14 @@ class VerificationController extends BaseController
      */
     public function verify(Request $request)
     {
-        return $this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))
-            ? Redirect::to($request->get('redirectToUrl'))->with('success', trans('brackets/verifications::verifications.code_verify_success'))
-            : Redirect::back()->with('error', trans('brackets/verifications::verifications.code_verify_failed'));
+        if ($this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
+            if (Config::get('verifications.actions.'. $request->get('action_name') .'.keep_verified_during_session')) {
+                Session::put('last_activity', Carbon::now()->toDateTime());
+            }
+
+            return Redirect::to($request->get('redirectToUrl'))->with('success', trans('brackets/verifications::verifications.code_verify_success'));
+        }
+
+        return Redirect::back()->with('error', trans('brackets/verifications::verifications.code_verify_failed'));
     }
 }
