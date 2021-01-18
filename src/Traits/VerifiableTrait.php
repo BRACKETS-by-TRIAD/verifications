@@ -15,7 +15,7 @@ trait VerifiableTrait
     protected function loadActiveVerifications(string $action)
     {
         if (is_null($this->activeVerifications)) {
-            if (Config::get('verifications.'.$action.'.keep_verified_during_session')) {
+            if (Config::get('verifications.actions.'.$action.'.keep_verified_during_session')) {
                 if (Session::has('last_activity') && Session::get('last_activity') < Carbon::now()->addMinutes(Config::get('session.lifetime'))->toDateTime()) {
                     $this->activeVerifications = VerificationCode::allFor($this)->whereNull('verifies_until')->whereNotNull('used_at')->get();
                 } else {
@@ -37,7 +37,7 @@ trait VerifiableTrait
 
     public function isVerificationEnabled(string $action): bool
     {
-        if (Config::get('verifications.'.$action.'.enabled')) {
+        if (Config::get('verifications.actions.'.$action.'.enabled')) {
             return true;
         }
 

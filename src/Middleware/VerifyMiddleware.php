@@ -30,7 +30,7 @@ class VerifyMiddleware
     {
         list($action) = explode(":", $params);
 
-        if (Config::get('verifications.'. $action .'.keep_verified_during_session')) {
+        if (Config::get('verifications.actions.'. $action .'.keep_verified_during_session')) {
             Session::put('last_activity', Carbon::now()->toDateTime());
         }
 
