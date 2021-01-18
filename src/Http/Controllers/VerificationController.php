@@ -35,8 +35,8 @@ class VerificationController extends BaseController
         $this->verification->setUser(Auth::user());
 
         return $this->verification->generateCodeAndSend($request->get('action_name'))
-            ? Redirect::to($request->url())->with('success', trans('brackets/verifications::verifications.code_resend_success'))
-            : Redirect::to($request->url())->with('error', trans('brackets/verifications::verifications.code_resend_error'));
+            ? Redirect::back()->with('success', trans('brackets/verifications::verifications.code_resend_success'))
+            : Redirect::back()->with('error', trans('brackets/verifications::verifications.code_resend_error'));
     }
 
     /**
