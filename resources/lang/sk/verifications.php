@@ -3,7 +3,7 @@
 return [
     'verification_code' => 'Overovací kód',
     'verification_code_subtitle' => 'Pre prístup do tejto sekcie musíte overiť svoju identitu.',
-    'verification_code_subtitle2' => 'Prosím zadajte kód, ktorý sme Vám poslali na :channel :contact.',
+    'verification_code_subtitle2' => 'Prosím zadajte kód, ktorý sme Vám poslali na :channel - <b>:contact</b>',
     'didnt_receive_code' => 'Neprišiel Vám kód?',
     'send_new_code' => 'Odoslať nový kód',
     'verify' => 'Overiť',
