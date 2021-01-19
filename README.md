@@ -183,17 +183,3 @@ TWILIO_NUMBER:"INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
 ```
 
 More info here: https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio
-
-## Custom channel providers
-
-If you need to use some other channel for verification, you need follow common steps:
-
-1. create contract for your channel, which extends `ChannelProviderInterface` 
-
-2. create provider for your channel, which implements your contract from the 1st step
-
-3. add binding
-
-4. override Verification@getProvider($action)
-
-TBD after testing
