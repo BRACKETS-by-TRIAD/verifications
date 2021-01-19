@@ -2,8 +2,13 @@
 
 namespace Brackets\Verifications\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property \DateTime|null verifies_until
+ * @property \DateTime used_at
+ */
 class VerificationCode extends Model
 {
     protected $table = 'verification_codes';
@@ -18,9 +23,9 @@ class VerificationCode extends Model
         'used_at'
     ];
 
-    public function scopeAllFor($query, Verifiable $verifiable)
+    public function scopeAllFor(Builder $query, Verifiable $verifiable)
     {
-        return $query->where('verifiable_type', get_class($verifiable))
+        return $query->where('verifiable_type', $verifiable->getMorphClass())
                      ->where('verifiable_id', $verifiable->getKey());
     }
 }

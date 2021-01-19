@@ -1,5 +1,15 @@
 # Verifications
-Package used for verification of any kind of actions by sms/email generated codes. Although, would be used for Two-Factor authentication.
+This package should be used for code-based verification of of actions (routes)
+
+Currently packages supports two channels out of the box:
+- sms
+- email
+
+but it's easy to extend package to support custom channels.
+
+Packages ships also with a simple frontend that could be easily overridden to meet your UX.
+
+One special case of a verification is a Two-factor authentication, but the package is intentionally designed to be versatile. 
 
 ## Installation
 
@@ -9,45 +19,10 @@ Package used for verification of any kind of actions by sms/email generated code
 
 ## Usage
 
-### Configuration
-First, you need to define the routes/actions you would like to be verified.
+### Implementing Verifiable
+First of all, you need to have an authenticated user (i.e. User model) that implements **Verifiable** interface and use **VerifiableTrait**. Interface requires you to define two methods that are - in a typical scenario - just the accessors methods for the `email` and `phone` own attributes on your user User (but you have the option if i.e. these attributes exists on some related model like `UserProfileData` etc.):
 
-This can be achieved in the configuration file `/config/verifications.php`. 
-
-As you can see, there are some example cases for it's usage. Please, keep strict key-names and values. 
-```.
-    'enabled' => true,                                      // true/false - global package enable/disable for test purposes @ localhost
-    'actions' => [
-        'withdraw-money' => [
-            'enabled' => true,                              // true/false
-            'channel' => 'sms',                             // sms, email
-            'keep_verified_during_session' => false,        // if true, keeps verification valid while session exists
-            'verified_action_valid_minutes' => 15,          // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action 
-            'code' => [
-                'type' => 'numeric',                        // specifies type of verification code, it has to be set to 'numeric' or 'string'
-                'length' => 6,                              // specifies verification code length, set to 6 by default
-                'validity_length_minutes' => 10,            // specifies length of code validity
-            ],
-        ],
-    ]
 ```
-
-### GET request verification
-If you would like to protect some GET routes:
-
-1. your authenticated entity (typically User) should implement **Verifiable** interface and use **VerifiableTrait**
-
-2. your protected route should be guarded by **VerificationMiddleware** 
-* `...->middleware('verifications.verify:{action-name}');` - action name must be the same as a name in config
-
-Note: If you need to insert **phone_number**/**email** attributes to your table, you can use artisan commands `verifications:add-email {table-name}` and/or `verifications:add-phone {table-name}`.
-
-**Example:**  
-Let's say, you want to verify the **withdraw-money** operation in your system. 
-
-1. Implement **Verifiable** interface with generated method stubs and use **VerifiableTrait** in your authenticated model entity.
-
-```.
 class User extends Authenticatable implements Verifiable
 {
     use VerifiableTrait;
@@ -66,25 +41,125 @@ class User extends Authenticatable implements Verifiable
 }
 ```
 
+Note: If you need to insert **phone_number**/**email** attributes to your `user` table, you can use artisan commands `verifications:add-email {table-name}` and/or `verifications:add-phone {table-name}`. 
 
-2. Lastly, add **VerificationMiddleware** to your route 
+### Configuration
+Then you need to define an action that would require verification.
 
-```.
-Route::get('/{account}/withdraw-money', 'MoneyController@withdrawMoney')
-            ->name('withdraw-money')
-            ->middleware('verifications.verify:withdraw-money');
+This can be achieved in the configuration file `/config/verifications.php`. 
+ 
+```
+    'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
+    'actions' => [
+        'my-action' => [
+            'enabled' => true,                              // you can enable/disable single action
+            'channel' => 'sms',                             // currently: sms, email
+            'keep_verified_during_session' => false,        // if true, keeps verification valid while session exists
+            'verified_action_valid_minutes' => 15,          // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action
+            'code' => [
+                'type' => 'numeric',                        // specifies the type of verification code, can be one of: 'numeric' or 'string'
+                'length' => 6,                              // specifies the verification code length, defaults to 6
+                'validity_length_minutes' => 10,            // specifies the length in minutes how long the code will be valid for use
+            ],
+        ],
+    ]
 ```
 
-Every time users tries to call the withdraw-money action, he will be redirected to the verification screen where he is required to provide a code that was sent to him. 
+### GET request verification
+Typically you use this package to protect the entrance to some specific area of the application.
+This can be done by protecting all the routes using **VerificationMiddleware** middleware:
+
+```
+...->middleware('verifications.verify:{my-action}');
+```
+
+**Example:**  
+Let's say we want to verify the secret **money-balance** screen.
+
+Define the action in your config:
+```
+    'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
+    'actions' => [
+        'money-balance' => [
+            'enabled' => true,                              // you can enable/disable single action
+            'channel' => 'sms',                             // currently: sms, email
+            'keep_verified_during_session' => false,        // if true, keeps verification valid while session exists
+            'verified_action_valid_minutes' => 15,          // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action
+            'code' => [
+                'type' => 'numeric',                        // specifies the type of verification code, can be one of: 'numeric' or 'string'
+                'length' => 6,                              // specifies the verification code length, defaults to 6
+                'validity_length_minutes' => 10,            // specifies the length in minutes how long the code will be valid for use
+            ],
+        ],
+    ]
+```
+
+And protect the route: 
+
+```
+Route::get('/{account}/money-balance', 'MoneyController@moneyBalance')
+    ->name('money-balance')
+    ->middleware('verifications.verify:money-balance');
+```
+
+Every time users tries to go to the `/{account}/money-balance` URL, he will be redirected to the verification screen where he is required to provide a code that was sent to him. 
 
 ### POST request verification
 
-TODO finish this
+Verifying POST actions is a bit more tricky because user cannot be redirected back to the POST request (this is technically impossible).
+
+But of course you can block the access to some POST action until user verifies it. Once he does verify it, everything works for him smoothly. But until he does and hit the POST route, he will be redirected back to the previous GET URL.
+
+You have two options here:
+1. either make sure User is always verified on some GET route *before* he performs the action.
+2. you can create a JavaScript script that will perform the POST request on Users behalf on a GET route, if he is verified  
+
+**Example:**  
+Let's continue with our MoneyApp example. But now we want to protect the **money-withdraw** action.
+
+The protection of a POST route is very similar:
+```
+Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
+    ->name('money-withdraw')
+    ->middleware('verifications.verify:money-withdraw');
+```
+
+Tip: you can of course add middleware to the whole group of routes:
+```
+Route::middleware(['verifications.verify:money-balance'])->group(static function () {
+    Route::get('/{account}/money-balance', 'MoneyController@moneyBalance')
+        ->name('money-balance');
+        
+    Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
+        ->name('money-withdraw');
+    // ...
+});
+```
+
+### Other use
+
+In some scenarios you may want to use the verification on some action and needs further customization (i.e. only verify if some other conditions are met or provide a custom redirectTo method for POST actions verifications). You may use the Verification facade to manually run the verification in your controller providing the closure that will be run only after successful verification:
+
+```
+public function postDownloadInvoice(Invoice $invoice)
+{
+    // this code will run on the attempt before and verification and then again after the verification
+    if (!$invoice->isPublished()) {
+        throw InvoiceNotPublishedException();  
+    }  
+
+    return Verification::verify('download-invoice', // name of the action
+                                '/invoices',        // URL user will be redirect after verification (he must click to download the invoice againa manually :( 
+                                function () use ($invoice) {
+                                    return $invoice->download();
+                                });
+}
+``` 
 
 ### Customizing view
 
-Base view of insert code form is stored in `verifications/resources/views/verification.blade.php`. If you want to modify this base template, you can override it, by creating 
-the same named view in your project folder `resources/views/vendor/brackets/verifications/verification.blade.php`.
+Base view of insert code form is stored in `verifications/resources/views/verification.blade.php`.
+You can easily override it by creating the file `resources/views/vendor/brackets/verifications/verification.blade.php`.
 
 ### Conditional verification
 
@@ -123,26 +198,23 @@ Special case for the use of this package is Two-Factor Authentication.
 
 Imagine simple scenario when 2FA is required for all users.
 
-1. add 2FA in the config
+1. add 2FA to the config
 
 ```
-```.
-    'enabled' => true,
     'actions' => [
         '2FA' => [
-            'enabled' => true,                              // true/false
-            'channel' => 'sms',                             // sms, email
-            'keep_verified_during_session' => true,         // if true, keeps verification valid while session exists 
+            'enabled' => true,
+            'channel' => 'sms',
+            'keep_verified_during_session' => true, 
             'code' => [
-                'type' => 'numeric',                        // specifies type of verification code, it has to be set to 'numeric' or 'string'
-                'length' => 6,                              // specifies verification code length, set to 6 by default
-                'validity_length_minutes' => 10,            // specifies length of code validity
+                // ...
             ],
         ],
     ]
 ```
 
 2. protect all your routes
+
 ```
 Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'], function(){
 

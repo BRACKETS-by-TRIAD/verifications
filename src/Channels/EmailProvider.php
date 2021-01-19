@@ -21,6 +21,7 @@ class EmailProvider implements EmailProviderInterface
 
         try {
             Mail::send("brackets/verifications::email.verification-email", ['code' => $code], function ($message) use ($recipient) {
+                // TODO how to provide subject customization?
                 $message->subject('Verification code' .' | '. Config::get('app.name'));
                 $message->to($recipient);
             });
