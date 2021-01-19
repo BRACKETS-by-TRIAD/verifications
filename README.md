@@ -111,8 +111,8 @@ Verifying POST actions is a bit more tricky because user cannot be redirected ba
 But of course you can block the access to some POST action until user verifies it. Once he does verify it, everything works for him smoothly. But until he does and hit the POST route, he will be redirected back to the previous GET URL.
 
 You have two options here:
-1. either make sure User is always verified on some GET route *before* he performs the action.
-2. you can create a JavaScript script that will perform the POST request on Users behalf on a GET route, if he is verified  
+1. either make sure User is always verified on some GET route *before* he performs the POST action,
+2. or once User is verified and redirected back to the previous GET, some handy JavaScript can perform the POST request on User's behalf, so he doesn't have to _click_ again
 
 **Example:**  
 Let's continue with our MoneyApp example. But now we want to protect the **money-withdraw** action.
@@ -123,6 +123,10 @@ Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
     ->name('money-withdraw')
     ->middleware('verifications.verify:money-withdraw');
 ```
+
+Now, if User goes to the `/{account}` (that is not protected) and from there he performs the `/{account}/money-withdraw` POST, he will be verified. Once verified he will be redirected back to the `/{account}`.
+
+Better approach is to have the `/{account}/money-withdraw` also as a GET route and perform a JavaScript-based POST and once User is redirected back, you can perform the action again. 
 
 Tip: you can of course add middleware to the whole group of routes:
 ```
@@ -143,7 +147,7 @@ In some scenarios you may want to use the verification on some action and needs 
 ```
 public function postDownloadInvoice(Invoice $invoice)
 {
-    // this code will run on the attempt before and verification and then again after the verification
+    // this code will run on the attempt before and verification and then again, after the verification
     if (!$invoice->isPublished()) {
         throw InvoiceNotPublishedException();  
     }  
@@ -151,6 +155,7 @@ public function postDownloadInvoice(Invoice $invoice)
     return Verification::verify('download-invoice', // name of the action
                                 '/invoices',        // URL user will be redirect after verification (he must click to download the invoice againa manually :( 
                                 function () use ($invoice) {
+                                    // on the other hand this code will run only once, after the verification
                                     return $invoice->download();
                                 });
 }
