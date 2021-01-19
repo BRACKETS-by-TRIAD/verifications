@@ -113,7 +113,6 @@ class Verification
         $codeLength = Config::get('verifications.actions.'. $action .'.code.length', 6);
 
         return $this->generator->generate($codeType, $codeLength);
-
     }
 
     /**
