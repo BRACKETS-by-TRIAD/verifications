@@ -23,7 +23,7 @@ Package can help you also with a special case of a verification - the [Two-facto
 ### Implementing Verifiable
 First of all, you need to have an authenticated user (i.e. User model) that implements **Verifiable** interface and use **VerifiableTrait**. Interface requires you to define two methods that are - in a typical scenario - just the accessors methods for the `email` and `phone` own attributes on your user User (but you have the option if i.e. these attributes exists on some related model like `UserProfileData` etc.):
 
-```
+```.
 class User extends Authenticatable implements Verifiable
 {
     use VerifiableTrait;
@@ -49,7 +49,7 @@ Then you need to define an action that would require verification.
 
 This can be achieved in the configuration file `/config/verifications.php`. 
  
-```
+```.
     'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
     'actions' => [
         'my-action' => [
@@ -70,7 +70,7 @@ This can be achieved in the configuration file `/config/verifications.php`.
 Typically you use this package to protect the entrance to some specific area of the application.
 This can be done by protecting all the routes using **VerificationMiddleware** middleware:
 
-```
+```.
 Route::middleware('verifications.verify:{my-action}')
 ```
 
@@ -78,7 +78,7 @@ Route::middleware('verifications.verify:{my-action}')
 Let's say we want to verify the secret **money-balance** screen.
 
 Define the action in your config:
-```
+```.
     'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
     'actions' => [
         'money-balance' => [
@@ -97,7 +97,7 @@ Define the action in your config:
 
 And protect the route: 
 
-```
+```.
 Route::get('/{account}/money-balance', 'MoneyController@moneyBalance')
     ->name('money-balance')
     ->middleware('verifications.verify:money-balance');
@@ -124,7 +124,7 @@ Which option to use depends on your exact use case. But typically, if the action
 Let's continue with our MoneyApp example, but now we want to protect the **money-withdraw** action.
 
 The protection of a POST route is very similar:
-```
+```.
 Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
     ->name('money-withdraw')
     ->middleware('verifications.verify:money-withdraw');
@@ -135,7 +135,7 @@ This will definitely prevent withdrawing the money for the unverified user. But 
 If we think about it, we actually want to protect the GET route for money withdraw feature, not only the final submit button. 
 
 So let's add a GET route:
-```
+```.
 Route::get('/{account}/money-withdraw', 'MoneyController@moneyWithdrawForm')
     ->name('money-withdraw-form')
     ->middleware('verifications.verify:money-withdraw');
@@ -148,7 +148,7 @@ Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
 Method `moneyWithdrawForm` will display the blade view with the form that will perform the POST to `/{account}/money-withdraw` on submit. But User is verified ahead, in the GET route, so his UX will be smooth.
 
 Tip: you can of course add middleware to the whole group of routes:
-```
+```.
 Route::middleware(['verifications.verify:money-balance'])->group(static function () {
     Route::get('/{account}/money-balance', 'MoneyController@moneyBalance')
         ->name('money-balance');
@@ -166,7 +166,7 @@ Route::middleware(['verifications.verify:money-balance'])->group(static function
 
 In some scenarios you may want to use the verification on some action and needs further customization (i.e. only verify if some other conditions are met or provide a custom redirectTo method for POST actions verifications). You may use the Verification facade to manually run the verification in your controller providing the closure that will be run only after successful verification:
 
-```php
+```.
 public function postDownloadInvoice(Invoice $invoice)
 {
     // this code will run on the attempt before and verification and then again, after the verification
@@ -227,7 +227,7 @@ Imagine simple scenario when 2FA is required for all users.
 
 1. add 2FA to the config
 
-```
+```.
     'actions' => [
         '2FA' => [
             'enabled' => true,
@@ -242,7 +242,7 @@ Imagine simple scenario when 2FA is required for all users.
 
 2. protect all your routes
 
-```
+```.
 Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'], function(){
 
     // all your routes goes here
