@@ -257,11 +257,11 @@ Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'],
 
 The packages ships with two default channels - email and sms.
 
-## Email
+### Email
 
 The package uses the default Laravel's [Mail](https://laravel.com/docs/mail). facade to send emails, so be sure to configure it properly.
 
-## SMS
+### SMS
 
 The package ships with the one SMS provider - Twilio.
 
@@ -274,3 +274,17 @@ TWILIO_NUMBER:"INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
 ```
 
 Check out [this blogpost](https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio) to find out more info about the Twilio integration.
+
+
+## Security
+
+If you discover any security related issues, please email [pavol.perdik@brackets.sk](mailto:pavol.perdik@brackets.sk) instead of using the issue tracker.
+
+## Credits
+
+- [Miroslav Trnavsky](https://github.com/miroslavtrnavsky)
+- [Pavol Perdik](https://github.com/palypster)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
