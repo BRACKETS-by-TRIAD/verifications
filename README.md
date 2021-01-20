@@ -132,7 +132,7 @@ Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
 
 This will definitely prevent withdrawing the money for the unverified user. But it doesn't solve the redirect problem. Let's do it.
 
-If we think about it, we actually want to protect the GET route for money withdraw feature, not the final submit button. 
+If we think about it, we actually want to protect the GET route for money withdraw feature, not only the final submit button. 
 
 So let's add a GET route:
 ```
@@ -145,7 +145,7 @@ Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
     ->middleware('verifications.verify:money-withdraw');
 ```
 
-Method `moneyWithdrawForm` will display the blade view with the form that will perform the POST to `/{account}/money-withdraw` on submit.
+Method `moneyWithdrawForm` will display the blade view with the form that will perform the POST to `/{account}/money-withdraw` on submit. But User is verified ahead, in the GET route, so his UX will be smooth.
 
 Tip: you can of course add middleware to the whole group of routes:
 ```
@@ -162,11 +162,11 @@ Route::middleware(['verifications.verify:money-balance'])->group(static function
 });
 ```
 
-### Other use
+### Advanced use case
 
 In some scenarios you may want to use the verification on some action and needs further customization (i.e. only verify if some other conditions are met or provide a custom redirectTo method for POST actions verifications). You may use the Verification facade to manually run the verification in your controller providing the closure that will be run only after successful verification:
 
-```
+```php
 public function postDownloadInvoice(Invoice $invoice)
 {
     // this code will run on the attempt before and verification and then again, after the verification
