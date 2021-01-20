@@ -79,7 +79,7 @@ class Verification
      * @param string $action
      * @return bool
      */
-    public function generateCodeAndSend(string $action) : bool
+    public function generateCodeAndSend(string $action): bool
     {
         $code = $this->generateCode($action);
 
