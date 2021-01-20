@@ -14,6 +14,7 @@ use Brackets\Verifications\Commands\AddLoginVerifyAttributeCommand;
 use Brackets\Verifications\Commands\AddPhoneAttributeCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
 use Brackets\Verifications\Middleware\VerifyMiddleware;
+use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Illuminate\Container\Container;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Config;
@@ -71,7 +72,7 @@ class VerificationServiceProvider extends ServiceProvider
         $channelsCollection = collect(array_values(Config::get('verifications.actions')))->pluck('channel')->unique();
 
         $this->app->bind('verification', function () {
-            return new Verification();
+            return new Verification($this->app->make(VerificationCodesRepository::class), $this->app->make(GeneratorInterface::class));
         });
 
         $this->app->bind(GeneratorInterface::class, SimpleGenerator::class);
