@@ -8,6 +8,7 @@ use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
+use Brackets\Verifications\Traits\VerifiableTrait;
 use Carbon\Carbon;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Config;
@@ -77,7 +78,6 @@ class Verification
     /**
      * @param string $action
      * @return bool
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function generateCodeAndSend(string $action) : bool
     {
@@ -97,6 +97,7 @@ class Verification
     {
         $channel = Config::get('verifications.actions.'.$action .'.channel');
 
+        // TODO maybe move this to a provider, so it is easily extensible?
         switch ($channel) {
             case 'sms':
                 return Container::getInstance()->make(SMSProviderInterface::class);
@@ -116,7 +117,7 @@ class Verification
     }
 
     /**
-     * @return Verifiable
+     * @return Verifiable|VerifiableTrait
      */
     private function getUser(): Verifiable
     {

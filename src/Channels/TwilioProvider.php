@@ -29,16 +29,15 @@ class TwilioProvider implements SMSProviderInterface
     /**
      * @param Verifiable $verifiable
      * @param string $code
-     * @throws \Twilio\Exceptions\TwilioException
+     * @throws \Exception
      */
     public function sendCode(Verifiable $verifiable, string $code): void
     {
         try {
-//            \Log::info('Your code is: '. $code);        // test purposes
-
             $this->twilioClient->messages->create($verifiable->getPhoneAttribute(), [
                 'from' => $this->twilio_number,
-                'body' => $code
+                // TODO move to resources/views for easier customization
+                'body' => "Use {$code} for verification"
             ]);
         } catch (\Exception $ex) {
             throw $ex;
