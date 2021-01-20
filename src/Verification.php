@@ -11,9 +11,9 @@ use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Brackets\Verifications\Traits\VerifiableTrait;
 use Carbon\Carbon;
 use Illuminate\Container\Container;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class Verification
@@ -38,8 +38,8 @@ class Verification
      * @param string $action
      * @param string $redirectTo
      * @param \Closure|null $closure
-     * @return bool|\Illuminate\Http\RedirectResponse|mixed
      * @throws \Exception
+     * @return bool|\Illuminate\Http\RedirectResponse|mixed
      */
     public function verify(string $action, string $redirectTo, \Closure $closure = null)
     {
@@ -108,7 +108,7 @@ class Verification
         }
     }
 
-    protected function generateCode(string $action): string
+    private function generateCode(string $action): string
     {
         $codeType = Config::get('verifications.actions.'. $action .'.code.type');
         $codeLength = Config::get('verifications.actions.'. $action .'.code.length', 6);

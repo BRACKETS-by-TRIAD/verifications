@@ -21,8 +21,8 @@ class VerifyMiddleware
      * @param Request $request
      * @param \Closure $next
      * @param $params
-     * @return RedirectResponse|mixed
      * @throws \Exception
+     * @return RedirectResponse|mixed
      */
     public function handle(Request $request, \Closure $next, $params)
     {

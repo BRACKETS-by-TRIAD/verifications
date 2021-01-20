@@ -4,13 +4,13 @@
 namespace Brackets\Verifications;
 
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
+use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
 use Brackets\Verifications\Channels\TwilioProvider;
-use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Brackets\Verifications\CodeGenerator\SimpleGenerator;
-use Brackets\Verifications\Commands\AddLoginVerifyAttributeCommand;
 use Brackets\Verifications\Commands\AddEmailAttributeCommand;
+use Brackets\Verifications\Commands\AddLoginVerifyAttributeCommand;
 use Brackets\Verifications\Commands\AddPhoneAttributeCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
 use Brackets\Verifications\Middleware\VerifyMiddleware;
@@ -70,7 +70,7 @@ class VerificationServiceProvider extends ServiceProvider
     {
         $channelsCollection = collect(array_values(Config::get('verifications.actions')))->pluck('channel')->unique();
 
-        $this->app->bind('verification', function() {
+        $this->app->bind('verification', function () {
             return new Verification();
         });
 

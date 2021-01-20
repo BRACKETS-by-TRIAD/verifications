@@ -2,10 +2,10 @@
 
 namespace Brackets\Verifications\Http\Controllers;
 
+use Brackets\Verifications\Facades\Verification;
 use Carbon\Carbon;
-use Illuminate\Routing\Controller as BaseController;
-use Brackets\Verifications\Verification;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
@@ -14,17 +14,6 @@ use Illuminate\Support\Facades\View;
 
 class VerificationController extends BaseController
 {
-    /** @var Verification */
-    private $verification;
-
-    /**
-     * @param Verification $verification
-     */
-    public function __construct(Verification $verification)
-    {
-        $this->verification = $verification;
-    }
-
     public function showVerificationForm(Request $request)
     {
         $redirectToUrl = $request->query('redirectToUrl');
@@ -79,21 +68,21 @@ class VerificationController extends BaseController
 
     public function sendNewCode(Request $request)
     {
-        $this->verification->setUser(Auth::user());
+        Verification::setUser(Auth::user());
 
-        return $this->verification->generateCodeAndSend($request->get('action_name'))
+        return Verification::generateCodeAndSend($request->get('action_name'))
             ? Redirect::back()->with('success', trans('brackets/verifications::verifications.code_resend_success'))
             : Redirect::back()->with('error', trans('brackets/verifications::verifications.code_resend_error'));
     }
 
     /**
      * @param Request $request
-     * @return mixed
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @return mixed
      */
     public function verify(Request $request)
     {
-        if ($this->verification->verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
+        if (Verification::verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
             if (Config::get('verifications.actions.'. $request->get('action_name') .'.keep_verified_during_session')) {
                 Session::put('last_activity', Carbon::now()->toDateTime());
             }
