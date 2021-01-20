@@ -154,7 +154,7 @@ Route::middleware(['verifications.verify:money-balance'])->group(static function
         ->name('money-balance');
         
     Route::get('/{account}/money-withdraw', 'MoneyController@moneyWithdrawAutoConfirmator')
-        ->name('money-withdraw-auto-confirmator')
+        ->name('money-withdraw-auto-confirmator');
         
     Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
         ->name('money-withdraw');
@@ -169,13 +169,13 @@ In some scenarios you may want to use the verification on some action and needs 
 ```.
 public function postDownloadInvoice(Invoice $invoice)
 {
-    // this code will run on the attempt before and verification and then again, after the verification
+    // this code will run on the attempt before the verification and then again, after the successful verification
     if (!$invoice->isPublished()) {
-        throw InvoiceNotPublishedException();  
+        throw new InvoiceNotPublishedException();  
     }  
 
-    return Verification::verify('download-invoice', // name of the action
-                                '/invoices',        // URL user will be redirect after verification (he must click to download the invoice againa manually :( 
+    return Verification::verify('download-invoice',             // name of the action
+                                '/invoices',                    // URL user will be redirect after verification (he must click to download the invoice againa manually :( 
                                 function () use ($invoice) {
                                     // on the other hand this code will run only once, after the verification
                                     return $invoice->download();
