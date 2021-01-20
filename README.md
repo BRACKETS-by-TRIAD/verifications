@@ -71,7 +71,7 @@ Typically you use this package to protect the entrance to some specific area of 
 This can be done by protecting all the routes using **VerificationMiddleware** middleware:
 
 ```
-...->middleware('verifications.verify:{my-action}');
+Route::middleware('verifications.verify:{my-action}')
 ```
 
 **Example:**  
@@ -103,19 +103,21 @@ Route::get('/{account}/money-balance', 'MoneyController@moneyBalance')
     ->middleware('verifications.verify:money-balance');
 ```
 
-Every time users tries to go to the `/{account}/money-balance` URL, he will be redirected to the verification screen where he is required to provide a code that was sent to him. 
+When User tries to go to the `/{account}/money-balance` URL, he will be redirected to the verification screen where he is required to provide a code that was sent to him. 
 
 ### POST request verification
 
 Verifying POST actions is a bit more tricky because user cannot be redirected back to the POST request (this is technically impossible).
 
-But of course you can block the access to some POST action until user verifies it. Once he does verify it, everything works for him smoothly. But until he does and hit the POST route, he will be redirected back to the previous GET URL.
+Of course you can block the access to some POST action until user verifies it. Once he does verify it, everything works for him smoothly.
 
-That said you should always create a GET route displaying a screen where User can perform the action and protect this GET route as well (protecting the entrance into area where he can perform the POST action). In that case, User never experience weird behaviour of needing to click to the same action twice.   
+You should always create a GET route displaying a screen where User can perform the action and protect this GET route too (meaning protecting the entrance into the area, where he can perform the POST action). In that case, User never experience weird behaviour of needing to click to the same action twice.   
 
 You have two options here:
 1. either make sure User is always verified on some GET route *before* he performs the POST action (so limit the entrance to some route where he can perform the POST actions),
 2. or crete a pseudo-screen with with some handy JavaScript, that will auto-run the POST request on User's behalf so he doesn't have to click twice
+
+Which option to use depends on your exact use case. But typically, if the action requires User to input some data to the form, the _showForm_ GET route should be always protected, etc.
 
 **Example:**  
 Let's continue with our MoneyApp example, but now we want to protect the **money-withdraw** action.
