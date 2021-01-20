@@ -47,7 +47,7 @@ class VerificationServiceProvider extends ServiceProvider
         ], 'migrations');
 
         $this->publishes([
-            __DIR__.'../resources/views' => Container::getInstance()->resourcePath('views/vendor/brackets/verifications'),
+            __DIR__.'/../resources/views' => Container::getInstance()->resourcePath('views/vendor/brackets/verifications'),
         ], 'views');
     }
 
