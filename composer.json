@@ -1,8 +1,9 @@
 {
     "name": "brackets/verifications",
-    "description": "Two Factor Authentication (2FA) and code-based verification of actions (sms or email)",
+    "description": "Two Factor Authentication (2FA) and code-based verification of actions (sms or email) for Laravel",
     "keywords": [
         "2FA",
+        "laravel",
         "two-factor",
         "verification",
         "sms code"
