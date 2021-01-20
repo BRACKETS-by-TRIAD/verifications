@@ -114,8 +114,9 @@ Of course you can block the access to some POST action until user verifies it. O
 You should always create a GET route displaying a screen where User can perform the action and protect this GET route too (meaning protecting the entrance into the area, where he can perform the POST action). In that case, User never experience weird behaviour of needing to click to the same action twice.   
 
 You have two options here:
-1. either make sure User is always verified on some GET route *before* he performs the POST action (so limit the entrance to some route where he can perform the POST actions),
-2. or crete a pseudo-screen with with some handy JavaScript, that will auto-run the POST request on User's behalf so he doesn't have to click twice
+
+1. either make sure User is always verified on some GET route *before* he performs the POST action (so limit the entrance to some area, where he can perform the POST actions),
+2. or crete a pseudo-screen with with some handy JavaScript, that will auto-run the POST request on User's behalf on load, so he doesn't have to click twice
 
 Which option to use depends on your exact use case. But typically, if the action requires User to input some data to the form, the _showForm_ GET route should be always protected, etc.
 
