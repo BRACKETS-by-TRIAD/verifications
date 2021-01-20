@@ -2,6 +2,7 @@
 This package should be used for code-based verification of of actions (routes)
 
 Currently packages supports two channels out of the box:
+
 - sms
 - email
 
