@@ -1,16 +1,16 @@
 # Verifications
-This package should be used for code-based verification of of actions (routes)
+This package should be used for a code-based verification of actions (typically routes).
 
-Currently packages supports two channels out of the box:
+Currently packages supports two channels for sending verification codes:
 
 - sms
 - email
 
-but it's easy to extend package to support custom channels.
+but it's easy to extend the package to support custom channels.
 
-Packages ships also with a simple frontend that could be easily overridden to meet your UX.
+Packages ships also with a simple frontend (screen where user can input the code + default email/sms template) that could be easily overridden to meet your UX.
 
-One special case of a verification is a Two-factor authentication, but the package is intentionally designed to be versatile. 
+Package can help you also with a special case of a verification - the [Two-factor authentication](#2fa). 
 
 ## Installation
 
@@ -216,7 +216,7 @@ class User extends Authenticatable implements Verifiable
     }
 ```
 
-### Two factor authentication
+### <a name="2fa"></a>Two factor authentication
 
 Special case for the use of this package is Two-Factor Authentication.
 
