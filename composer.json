@@ -1,5 +1,28 @@
 {
     "name": "brackets/verifications",
+    "description": "Two Factor Authentication (2FA) and code-based verification of actions (sms or email)",
+    "keywords": [
+        "2FA",
+        "two-factor",
+        "verification",
+        "sms code",
+    ],
+    "license": "MIT",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Pavol Perdík",
+            "email": "pavol.perdik@brackets.sk",
+            "homepage": "https://www.brackets.sk",
+            "role": "Developer"
+        },
+        {
+            "name": "Miroslav Trnavský",
+            "email": "miroslav.trnavsky@brackets.sk",
+            "homepage": "https://www.brackets.sk",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "^7.2|^8.0",
         "twilio/sdk": "^6.0",
