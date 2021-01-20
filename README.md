@@ -185,8 +185,11 @@ public function postDownloadInvoice(Invoice $invoice)
 
 ### Customizing view
 
-Base view of insert code form is stored in `verifications/resources/views/verification.blade.php`.
-You can easily override it by creating the file `resources/views/vendor/brackets/verifications/verification.blade.php`.
+To customized the default blade views you just need to publish them using:
+
+```.
+php artisan vendor:publish --provider="Brackets\Verifications\VerificationServiceProvider" --tag="views"
+```
 
 ### Conditional verification
 
