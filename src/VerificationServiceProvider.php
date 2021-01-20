@@ -4,20 +4,17 @@
 namespace Brackets\Verifications;
 
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;
+use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Channels\EmailProvider;
 use Brackets\Verifications\Channels\TwilioProvider;
-use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Brackets\Verifications\CodeGenerator\SimpleGenerator;
-use Brackets\Verifications\Commands\AddLoginVerifyAttributeCommand;
 use Brackets\Verifications\Commands\AddEmailAttributeCommand;
+use Brackets\Verifications\Commands\AddLoginVerifyAttributeCommand;
 use Brackets\Verifications\Commands\AddPhoneAttributeCommand;
 use Brackets\Verifications\Commands\VerificationsInstall;
-use Brackets\Verifications\Listeners\OnLogoutListener;
 use Brackets\Verifications\Middleware\VerifyMiddleware;
-use Illuminate\Auth\Events\Logout;
 use Illuminate\Container\Container;
-use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
@@ -48,6 +45,10 @@ class VerificationServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/Database/migrations/' => Container::getInstance()->databasePath('migrations'),
         ], 'migrations');
+
+        $this->publishes([
+            __DIR__.'/../resources/views' => Container::getInstance()->resourcePath('views/vendor/brackets/verifications'),
+        ], 'views');
     }
 
     /**
@@ -68,6 +69,10 @@ class VerificationServiceProvider extends ServiceProvider
     private function bindProviders()
     {
         $channelsCollection = collect(array_values(Config::get('verifications.actions')))->pluck('channel')->unique();
+
+        $this->app->bind('verification', function () {
+            return new Verification();
+        });
 
         $this->app->bind(GeneratorInterface::class, SimpleGenerator::class);
 

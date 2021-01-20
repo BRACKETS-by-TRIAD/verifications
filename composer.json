@@ -56,7 +56,10 @@
         "laravel": {
             "providers": [
                 "Brackets\\Verifications\\VerificationServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Verification": "Brackets\\Verifications\\Facades\\Verification"
+            }
         }
     }
 }

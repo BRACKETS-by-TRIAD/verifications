@@ -9,9 +9,9 @@ interface GeneratorInterface
      *
      * @param string $type could be one of the following: numeric, string
      * @param $length int lenght of the code
+     * @throws \Exception
      * @return string generated code
      *
-     * @throws \Exception
      */
     public function generate(string $type, int $length): string;
 }

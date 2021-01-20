@@ -6,13 +6,12 @@ namespace Brackets\Verifications\Channels;
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
 use Twilio\Rest\Client;
 
 class TwilioProvider implements SMSProviderInterface
 {
-    /**
-     * @var Client
-     */
+    /** @var Client */
     private $twilioClient;
 
     private $twilio_number;
@@ -36,8 +35,7 @@ class TwilioProvider implements SMSProviderInterface
         try {
             $this->twilioClient->messages->create($verifiable->getPhoneAttribute(), [
                 'from' => $this->twilio_number,
-                // TODO move to resources/views for easier customization
-                'body' => "Use {$code} for verification"
+                'body' => View::make("brackets/verifications::sms.verification-sms", ['code' => $code])
             ]);
         } catch (\Exception $ex) {
             throw $ex;
