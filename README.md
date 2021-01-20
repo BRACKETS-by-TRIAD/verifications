@@ -110,6 +110,8 @@ Verifying POST actions is a bit more tricky because user cannot be redirected ba
 
 But of course you can block the access to some POST action until user verifies it. Once he does verify it, everything works for him smoothly. But until he does and hit the POST route, he will be redirected back to the previous GET URL.
 
+That said you should always create a GET route displaying a screen where User can perform the action and protect this GET route as well (protecting the entrance into area where he can perform the POST action). In that case, User never experience weird behaviour of needing to click to the same action twice.   
+
 You have two options here:
 1. either make sure User is always verified on some GET route *before* he performs the POST action (so limit the entrance to some route where he can perform the POST actions),
 2. or crete a pseudo-screen with with some handy JavaScript, that will auto-run the POST request on User's behalf so he doesn't have to click twice
@@ -126,10 +128,12 @@ Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
 
 This will definitely prevent withdrawing the money for the unverified user. But it doesn't solve the redirect problem. Let's do it.
 
-First let's add a second GET route:
+If we think about it, we actually want to protect the GET route for money withdraw feature, not the final submit button. 
+
+So let's add a GET route:
 ```
-Route::get('/{account}/money-withdraw', 'MoneyController@moneyWithdrawAutoConfirmator')
-    ->name('money-withdraw-auto-confirmator')
+Route::get('/{account}/money-withdraw', 'MoneyController@moneyWithdrawForm')
+    ->name('money-withdraw-form')
     ->middleware('verifications.verify:money-withdraw');
 
 Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
@@ -137,7 +141,7 @@ Route::post('/{account}/money-withdraw', 'MoneyController@moneyWithdraw')
     ->middleware('verifications.verify:money-withdraw');
 ```
 
-Method `moneyWithdrawAutoConfirmator` will display the blade view with the simple javascript that will perform the POST to `/{account}/money-withdraw` on load. In you app the button to withdraw the money should navigate to GET `/{account}/money-withdraw` instead of POST. If User is unverified for this action, he will be redirected to the verification. Once verified he will be redirected to this simple javascript that will take care of executing the POST.
+Method `moneyWithdrawForm` will display the blade view with the form that will perform the POST to `/{account}/money-withdraw` on submit.
 
 Tip: you can of course add middleware to the whole group of routes:
 ```
