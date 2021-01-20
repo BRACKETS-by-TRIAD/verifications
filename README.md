@@ -175,7 +175,7 @@ public function postDownloadInvoice(Invoice $invoice)
     }  
 
     return Verification::verify('download-invoice',             // name of the action
-                                '/invoices',                    // URL user will be redirect after verification (he must click to download the invoice againa manually :( 
+                                '/invoices',                    // URL user will be redirect after verification (he must click to download the invoice again manually :( 
                                 function () use ($invoice) {
                                     // on the other hand this code will run only once, after the verification
                                     return $invoice->download();
