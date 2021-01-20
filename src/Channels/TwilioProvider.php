@@ -5,8 +5,8 @@ namespace Brackets\Verifications\Channels;
 
 use Brackets\Verifications\Channels\Contracts\SMSProviderInterface;
 use Brackets\Verifications\Models\Verifiable;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
 use Twilio\Rest\Client;
 
 class TwilioProvider implements SMSProviderInterface
