@@ -10,7 +10,7 @@ but it's easy to extend the package to support custom channels.
 
 Packages ships also with a simple frontend (screen where user can input the code + default email/sms template) that could be easily overridden to meet your UX.
 
-Package can help you also with a special case of a verification - the [Two-factor authentication](#2fa). 
+Package can help you also with a special case of a verification - the [Two-factor authentication](#markdown-header-two-factor-authentication). 
 
 ## Installation
 
@@ -216,7 +216,7 @@ class User extends Authenticatable implements Verifiable
     }
 ```
 
-### <a name="2fa"></a>Two factor authentication
+### Two factor authentication
 
 Special case for the use of this package is Two-Factor Authentication.
 
