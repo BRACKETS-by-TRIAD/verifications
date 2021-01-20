@@ -111,7 +111,7 @@ Verifying POST actions is a bit more tricky because user cannot be redirected ba
 
 Of course you can block the access to some POST action until user verifies it. Once he does verify it, everything works for him smoothly.
 
-You should always create a GET route displaying a screen where User can perform the action and protect this GET route too (meaning protecting the entrance into the area, where he can perform the POST action). In that case, User never experience weird behaviour of needing to click to the same action twice.   
+**You should always create a GET route displaying a screen where User can perform the action and protect this GET route too (meaning protecting the entrance into the area, where he can perform the POST action).** In that case, User never experience weird behaviour of needing to click to the same action twice.   
 
 You have two options here:
 
@@ -162,7 +162,7 @@ Route::middleware(['verifications.verify:money-balance'])->group(static function
 });
 ```
 
-### Advanced use case
+### Advanced customization use case
 
 In some scenarios you may want to use the verification on some action and needs further customization (i.e. only verify if some other conditions are met or provide a custom redirectTo method for POST actions verifications). You may use the Verification facade to manually run the verification in your controller providing the closure that will be run only after successful verification:
 
@@ -182,6 +182,8 @@ public function postDownloadInvoice(Invoice $invoice)
                                 });
 }
 ``` 
+
+**Note, that even in this scenario, you need to protect the GET route before the POST, otherwise User won't be able to be redirected to the verification prompt screen, he will not be able to proceed.**
 
 ### Customizing the views
 
