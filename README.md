@@ -228,7 +228,7 @@ Special case for the use of this package is Two-Factor Authentication.
 
 Imagine simple scenario when 2FA is required for all users.
 
-1. add 2FA to the config
+First, add new 2FA action to the config:
 
 ```.
     'actions' => [
@@ -243,7 +243,7 @@ Imagine simple scenario when 2FA is required for all users.
     ]
 ```
 
-2. protect all your routes
+And then protect all your routes:
 
 ```.
 Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'], function(){
@@ -255,28 +255,17 @@ Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'],
 
 ## Channels
 
+The packages ships with two default channels - email and sms.
+
 ## Email
-If you want to send verification codes via email, you need to set up
-mailer variables your project `.env` file:
 
-```.
-MAIL_MAILER=smtp
-MAIL_HOST=
-MAIL_PORT=2525
-MAIL_USERNAME=
-MAIL_PASSWORD=
-MAIL_ENCRYPTION=
-MAIL_FROM_ADDRESS=
-MAIL_FROM_NAME="${APP_NAME}"
-```
+The package uses the default Laravel's [Mail](https://laravel.com/docs/mail). facade to send emails, so be sure to configure it properly.
 
-Note: If you need to override email view, you can override it, by creating
-the same named view in your project folder `resources/views/vendor/brackets/verifications/email/verification-email.blade.php`.
+## SMS
 
+The package ships with the one SMS provider - Twilio.
 
-## Twilio - SMS
-If you need to use Twilio client for SMS notifications, you are 
-supposed to define common variables your project `.env` file:
+To use Twilio, you just need to provide these variables in your `.env` file:
 
 ```.
 TWILIO_SID:"INSERT YOUR TWILIO SID HERE"
@@ -284,4 +273,4 @@ TWILIO_AUTH_TOKEN:"INSERT YOUR TWILIO TOKEN HERE"
 TWILIO_NUMBER:"INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
 ```
 
-More info here: https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio
+Check out [this blogpost](https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio) to find out more info about the Twilio integration.
