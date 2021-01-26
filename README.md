@@ -21,26 +21,7 @@ Package can help you also with a special case of a verification - the [Two-facto
 ## Usage
 
 ### Implementing Verifiable
-First of all, you need to have an authenticated user (i.e. User model) that implements **Verifiable** interface and use **VerifiableTrait**. Interface requires you to define two methods that are - in a typical scenario - just the accessors methods for the `email` and `phone` own attributes on your user User (but you have the option if i.e. these attributes exists on some related model like `UserProfileData` etc.):
-
-```php
-class User extends Authenticatable implements Verifiable
-{
-    use VerifiableTrait;
-
-    public function getPhoneAttribute(): string
-    {
-        return $this->phone;
-    }
-
-    public function getEmailAttribute(): string
-    {
-        return $this->email;
-    }
-    
-    // ...
-}
-```
+First of all, you need to have an authenticated user (i.e. User model) that implements **Verifiable** interface and use **VerifiableTrait**. You need to either define attribute/s `email` and/or `phone` on the model or implement accessor methos `getPhone()`/`getEmail()`.
 
 Note: If you need to insert **phone_number**/**email** attributes to your `user` table, you can use artisan commands `verifications:add-email {table-name}` and/or `verifications:add-phone {table-name}`. 
 
@@ -53,14 +34,14 @@ This can be achieved in the configuration file `/config/verifications.php`.
     'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
     'actions' => [
         'my-action' => [
-            'enabled' => true,                              // you can enable/disable single action
-            'channel' => 'sms',                             // currently: sms, email
-            'keep_verified_during_session' => false,        // if true, keeps verification valid while session exists
-            'verified_action_valid_minutes' => 15,          // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action
+            'enabled' => true,                               // you can enable/disable single action
+            'channel' => 'sms',                              // currently: sms, email
+            'verified_action_valid_type' => 'last-activity', // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see verified_action_expires_in_minutes)
+            'verified_action_expires_in_minutes' => 15,      // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action
             'code' => [
-                'type' => 'numeric',                        // specifies the type of verification code, can be one of: 'numeric' or 'string'
-                'length' => 6,                              // specifies the verification code length, defaults to 6
-                'validity_length_minutes' => 10,            // specifies the length in minutes how long the code will be valid for use
+                'type' => 'numeric',                         // specifies the type of verification code, can be one of: 'numeric' or 'string'
+                'length' => 6,                               // specifies the verification code length, defaults to 6
+                'validity_length_minutes' => 10,             // specifies the length in minutes how long the code will be valid for use
             ],
         ],
     ]
@@ -248,7 +229,7 @@ First, add new 2FA action to the config:
 And then protect all your routes:
 
 ```php
-Route::group([Brackets\Verifications\Middleware\VerifyMiddleware::class, '2FA'], function(){
+Route::group([‘middleware’ => ‘verifications.verify:2FA’], function(){
 
     // all your routes goes here
     
