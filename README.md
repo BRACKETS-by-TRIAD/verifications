@@ -36,12 +36,12 @@ This can be achieved in the configuration file `/config/verifications.php`.
         'my-action' => [
             'enabled' => true,                               // you can enable/disable single action
             'channel' => 'sms',                              // currently: sms, email
-            'verified_action_valid_type' => 'last-activity', // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see verified_action_expires_in_minutes)
-            'verified_action_expires_in_minutes' => 15,      // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action
+            'expires_in' => 15,                              // specifies how many minutes does it take to require another code verification for the same action
+            'expires_from' => 'last-activity',               // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see expires_in)
             'code' => [
                 'type' => 'numeric',                         // specifies the type of verification code, can be one of: 'numeric' or 'string'
                 'length' => 6,                               // specifies the verification code length, defaults to 6
-                'validity_length_minutes' => 10,             // specifies the length in minutes how long the code will be valid for use
+                'expires_in' => 10,                          // specifies how many minutes is the code valid
             ],
         ],
     ]
