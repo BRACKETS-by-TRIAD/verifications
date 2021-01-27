@@ -9,12 +9,10 @@ use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Brackets\Verifications\Traits\VerifiableTrait;
-use Carbon\Carbon;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 
 class Verification
 {
@@ -78,8 +76,8 @@ class Verification
     /**
      * @param string $action
      * @param string $hostIp
-     * @return bool
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @return bool
      */
     public function generateCodeAndSend(string $action, string $hostIp): bool
     {
