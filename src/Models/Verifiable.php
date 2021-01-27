@@ -4,10 +4,6 @@ namespace Brackets\Verifications\Models;
 
 interface Verifiable
 {
-    public function getPhoneAttribute(): string;
-
-    public function getEmailAttribute(): string;
-
     /**
      * Get the value of the model's primary key.
      *

@@ -2,12 +2,14 @@
 
 namespace Brackets\Verifications\Models;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property \DateTime|null verifies_until
  * @property \DateTime used_at
+ * @property \DateTime last_touched_at
  */
 class VerificationCode extends Model
 {
@@ -20,12 +22,15 @@ class VerificationCode extends Model
         'action_name',
         'expires_at',
         'verifies_until',
-        'used_at'
+        'used_at',
+        'last_touched_at',
+        'host_ip'
     ];
 
     public function scopeAllFor(Builder $query, Verifiable $verifiable)
     {
         return $query->where('verifiable_type', $verifiable->getMorphClass())
-                     ->where('verifiable_id', $verifiable->getKey());
+                     ->where('verifiable_id', $verifiable->getKey())
+                     ->where('host_ip', Container::getInstance()->make('request')->ip());
     }
 }

@@ -10,15 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 class VerificationCodesRepository
 {
-    public function createCode(Verifiable $verifiable, string $action, string $code)
+    public function createCode(Verifiable $verifiable, string $action, string $hostIp, string $code)
     {
-        return DB::transaction(function () use ($verifiable, $action, $code) {
-            $codeValidInMinutes = Config::get('verifications.actions.'. $action .'.code.validity_length_minutes');
+        return DB::transaction(function () use ($verifiable, $action, $hostIp, $code) {
+            $codeValidInMinutes = Config::get('verifications.actions.'. $action .'.code.expires_in');
 
             return VerificationCode::create([
                 'verifiable_id' => $verifiable->getKey(),
                 'verifiable_type' => $verifiable->getMorphClass(),
                 'code' => $code,
+                'host_ip' => $hostIp,
                 'action_name' => $action,
                 'expires_at' => Carbon::now()->addMinutes($codeValidInMinutes)->toDateTime()
             ]);
@@ -29,8 +30,7 @@ class VerificationCodesRepository
     {
         $now = Carbon::now()->toDateTime();
 
-        $verificationCode = VerificationCode::where('verifiable_id', $verifiable->getKey())
-                                            ->where('verifiable_type', $verifiable->getMorphClass())
+        $verificationCode = VerificationCode::allFor($verifiable)
                                             ->where('action_name', $action)
                                             ->where('code', $code)
                                             ->whereNull('used_at')
@@ -43,12 +43,11 @@ class VerificationCodesRepository
 
     private function updateVerifiedCode(VerificationCode $verificationCode, string $action, \DateTime $now): bool
     {
-        $actionVerifiedMinutes = !Config::get('verifications.actions.'. $action .'.keep_verified_during_session')
-                                ? Config::get('verifications.actions.'. $action .'.verified_action_valid_minutes')
-                                : null;
+        $actionVerifiedMinutes = Config::get('verifications.actions.'. $action .'.expires_in');
 
-        $verificationCode->verifies_until = $actionVerifiedMinutes ? Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime() : null;
+        $verificationCode->verifies_until = Carbon::parse($now)->addMinutes($actionVerifiedMinutes)->toDateTime();
         $verificationCode->used_at = $now;
+        $verificationCode->last_touched_at = Config::get('verifications.actions.'. $action .'.expires_from') === 'last-activity' ? $now : null;
 
         $verificationCode->save();
 
