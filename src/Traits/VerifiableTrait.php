@@ -27,13 +27,13 @@ trait VerifiableTrait
 
         switch (Config::get('verifications.actions.'. $action .'.expires_from')) {
             case 'last-activity':
-                return VerificationCode::allFor($this)
-                                        ->where('action_name', $action)
-                                        ->where('verifies_until', '>=', $now->toDateTime())
-                                        ->update([
-                                            'last_touched_at' => $now->toDateTime(),
-                                            'verifies_until' => $now->addMinutes(Config::get('verifications.actions.'. $action .'.expires_in'))->toDateTime()
-                                        ])->refresh();
+                 $verifications = VerificationCode::allActiveForAction($this, $action, $now->toDateTime())->get();      //TODO: refactor to one query if possible?
+                 $verifications->update([
+                     'last_touched_at' => $now->toDateTime(),
+                     'verifies_until' => $now->addMinutes(Config::get('verifications.actions.'. $action .'.expires_in'))->toDateTime()
+                 ]);
+
+                 return $verifications;
 
             case 'verification':
                 return VerificationCode::allFor($this)->where('verifies_until', '>=', $now->toDateTime())->get();

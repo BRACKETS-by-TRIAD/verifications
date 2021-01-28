@@ -33,4 +33,11 @@ class VerificationCode extends Model
                      ->where('verifiable_id', $verifiable->getKey())
                      ->where('host_ip', Container::getInstance()->make('request')->ip());
     }
+
+    public function scopeAllActiveForAction(Builder $query, Verifiable $verifiable, string $action, \DateTime $dateTime)
+    {
+        return $query->allFor($verifiable)
+                     ->where('action_name', $action)
+                     ->where('verifies_until', '>=', $dateTime);
+    }
 }
