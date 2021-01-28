@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\URL;
 class LoginWithCredentials
 {
     /**
-     * @param  null $_
-     * @param  array<string, mixed> $args
-     * @return string
+     * @param null $_
+     * @param array<string, mixed> $args
      * @throws Error
+     * @return string
      */
     public function __invoke($_, array $args)
     {

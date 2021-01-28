@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Auth;
 class VerifyWithCode
 {
     /**
-     * @param  null $_
-     * @param  array<string, mixed> $args
-     * @return string
+     * @param null $_
+     * @param array<string, mixed> $args
      * @throws Error
+     * @return string
      */
     public function __invoke($_, array $args)
     {
