@@ -33,13 +33,7 @@ trait VerifiableTrait
                      'verifies_until' => $now->addMinutes(Config::get('verifications.actions.'. $action .'.expires_in'))->toDateTime()
                  ]);
 
-                 $verifications = $verificationsQuery->get();
-
-                 if (count($verifications) == 0) {
-                     $this->activeVerifications = collect([]);
-                 }
-
-                 return $verifications;
+                 return $verificationsQuery->get();
 
             case 'verification':
                 return VerificationCode::allFor($this)->where('verifies_until', '>=', $now->toDateTime())->get();
