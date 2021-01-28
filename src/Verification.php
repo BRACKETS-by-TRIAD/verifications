@@ -47,10 +47,6 @@ class Verification
             return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectTo]);
         }
 
-//        if (Config::get('verifications.actions.'. $action .'.keep_verified_during_session')) {
-//            Session::put('last_activity', Carbon::now()->toDateTime());
-//        }
-
         return is_null($closure) ? true : $closure();
     }
 
