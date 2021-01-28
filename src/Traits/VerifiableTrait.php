@@ -27,7 +27,7 @@ trait VerifiableTrait
 
         switch (Config::get('verifications.actions.'. $action .'.expires_from')) {
             case 'last-activity':
-                 $verificationsQuery = VerificationCode::allActiveForAction($this, $action, $now->toDateTime());      //TODO: refactor to one query if possible?
+                 $verificationsQuery = VerificationCode::allActiveForAction($this, $action, $now->toDateTime());
                  $verificationsQuery->update([
                      'last_touched_at' => $now->toDateTime(),
                      'verifies_until' => $now->addMinutes(Config::get('verifications.actions.'. $action .'.expires_in'))->toDateTime()
@@ -50,14 +50,12 @@ trait VerifiableTrait
         return $this->activeVerifications->where('action_name', $action)->count() > 0;
     }
 
-    public function isVerificationEnabled(string $action): bool                     // TODO: to be removed/refactored?
+    public function isVerificationEnabled(string $action): bool
     {
         if (Config::get('verifications.actions.'.$action.'.enabled')) {
-            return true;
-        }
-
-        if (method_exists('isVerificationRequired', $this)) {
-            return $this->isVerificationRequired($action);
+            return method_exists('isVerificationRequired', $this)
+                ? $this->isVerificationRequired($action)
+                : true;
         }
 
         return false;

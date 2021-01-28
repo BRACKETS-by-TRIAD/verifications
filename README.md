@@ -21,7 +21,7 @@ Package can help you also with a special case of a verification - the [Two-facto
 ## Usage
 
 ### Implementing Verifiable
-First of all, you need to have an authenticated user (i.e. User model) that implements **Verifiable** interface and use **VerifiableTrait**. You need to either define attribute/s `email` and/or `phone` on the model or implement accessor methos `getPhone()`/`getEmail()`.
+First of all, you need to have an authenticated user (i.e. User model) that implements **Verifiable** interface and use **VerifiableTrait**. You need to either define attribute/s `email` and/or `phone` on the model or implement accessor methods `getPhoneAttribute()`/`getEmailAttribute()`.
 
 Note: If you need to insert **phone_number**/**email** attributes to your `user` table, you can use artisan commands `verifications:add-email {table-name}` and/or `verifications:add-phone {table-name}`. 
 
@@ -37,13 +37,13 @@ This can be achieved in the configuration file `/config/verifications.php`.
             'enabled' => true,                               // you can enable/disable single action
             'channel' => 'sms',                              // currently: sms, email
             'expires_in' => 15,                              // specifies how many minutes does it take to require another code verification for the same action
-            'expires_from' => 'last-activity',               // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see expires_in)
+            'expires_from' => 'verification',                // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see expires_in)
             'code' => [
                 'type' => 'numeric',                         // specifies the type of verification code, can be one of: 'numeric' or 'string'
                 'length' => 6,                               // specifies the verification code length, defaults to 6
                 'expires_in' => 10,                          // specifies how many minutes is the code valid
-            ],
-        ],
+            ]
+        ]
     ]
 ```
 
@@ -63,16 +63,16 @@ Define the action in your config:
     'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
     'actions' => [
         'money-balance' => [
-            'enabled' => true,                              // you can enable/disable single action
-            'channel' => 'sms',                             // currently: sms, email
-            'keep_verified_during_session' => false,        // if true, keeps verification valid while session exists
-            'verified_action_valid_minutes' => 15,          // if keep_verified_during_session == false, then this config specifies how many minutes does it take to require another code verification for the same action
+            'enabled' => true,                               // you can enable/disable single action
+            'channel' => 'sms',                              // currently: sms, email
+            'expires_in' => 15,                              // specifies how many minutes does it take to require another code verification for the same action
+            'expires_from' => 'verification',                // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see expires_in)
             'code' => [
-                'type' => 'numeric',                        // specifies the type of verification code, can be one of: 'numeric' or 'string'
-                'length' => 6,                              // specifies the verification code length, defaults to 6
-                'validity_length_minutes' => 10,            // specifies the length in minutes how long the code will be valid for use
-            ],
-        ],
+                'type' => 'numeric',                         // specifies the type of verification code, can be one of: 'numeric' or 'string'
+                'length' => 6,                               // specifies the verification code length, defaults to 6
+                'expires_in' => 10,                          // specifies how many minutes is the code valid
+            ]
+        ]
     ]
 ```
 
@@ -218,7 +218,8 @@ First, add new 2FA action to the config:
         '2FA' => [
             'enabled' => true,
             'channel' => 'sms',
-            'keep_verified_during_session' => true, 
+            'expires_in' => 15,
+            'expires_from' => 'last_activity', 
             'code' => [
                 // ...
             ],
@@ -229,7 +230,7 @@ First, add new 2FA action to the config:
 And then protect all your routes:
 
 ```php
-Route::group([‘middleware’ => ‘verifications.verify:2FA’], function(){
+Route::middleware([‘verifications.verify:2FA’])->group(function() {
 
     // all your routes goes here
     
