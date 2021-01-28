@@ -110,7 +110,7 @@
                 </div>
                 <div class="card-footer">
                     <small>@lang('brackets/verifications::verifications.didnt_receive_code')</small>
-                    <button type="button" id="resendCodeBtn" class="btn btn-outline-secondary pull-right" data-toggle="tooltip" title="{{ trans('brackets/verifications::verifications.send_new_code') }}">
+                    <button type="button" onclick="generateNewCode()" class="btn btn-outline-secondary pull-right" data-toggle="tooltip" title="{{ trans('brackets/verifications::verifications.send_new_code') }}">
                         <i class="icon-repeat"></i>
                     </button>
                 </div>
@@ -124,18 +124,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    $(document).ready(function() {
-        $("#resendCodeBtn").click(function() {
-            var xhr = new XMLHttpRequest();
+    function generateNewCode() {
+        var xhr = new XMLHttpRequest();
 
-            xhr.open("POST", '{{ \Illuminate\Support\Facades\URL::route('brackets/verifications/resend') }}', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
-            xhr.send(JSON.stringify({
-                action_name: $("[name='action_name']").val()
-            }));
-        });
-    });
+        xhr.open("POST", '{{ \Illuminate\Support\Facades\URL::route('brackets/verifications/resend') }}', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content'));
+        xhr.send(JSON.stringify({
+            action_name: document.getElementsByName("action_name").value
+        }));
+    }
 </script>
 </body>
 </html>
