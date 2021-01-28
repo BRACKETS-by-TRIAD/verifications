@@ -17,7 +17,7 @@ class EmailProvider implements EmailProviderInterface
      */
     public function sendCode(Verifiable $verifiable, string $code): void
     {
-        $recipient = $verifiable->getEmailAttribute();
+        $recipient = $verifiable->email;
 
         try {
             Mail::send("brackets/verifications::email.verification-email", ['code' => $code], function ($message) use ($recipient) {

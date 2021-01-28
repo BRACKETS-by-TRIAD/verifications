@@ -36,11 +36,11 @@ class VerificationController extends BaseController
 
         switch ($channel) {
             case 'sms':
-                $contact = $this->getMutedString(Auth::user()->getPhoneAttribute());
+                $contact = $this->getMutedString(Auth::user()->phone);
                 break;
 
             case 'email':
-                $contact = $this->getMutedString(Auth::user()->getEmailAttribute(), 3, 5);
+                $contact = $this->getMutedString(Auth::user()->email, 3, 5);
                 break;
         }
 

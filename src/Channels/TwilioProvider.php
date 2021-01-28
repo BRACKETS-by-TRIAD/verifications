@@ -31,7 +31,7 @@ class TwilioProvider extends SMSProvider
     public function sendCode(Verifiable $verifiable, string $code): void
     {
         try {
-            $this->twilioClient->messages->create($verifiable->getPhoneAttribute(), [
+            $this->twilioClient->messages->create($verifiable->phone, [
                 'from' => $this->twilio_number,
                 'body' => $this->renderSMSMessage($code)
             ]);

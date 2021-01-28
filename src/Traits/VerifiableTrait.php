@@ -31,7 +31,7 @@ trait VerifiableTrait
                                         ->where('action_name', $action)
                                         ->where('verifies_until', '>=', $now->toDateTime())
                                         ->update([
-                                            'last_touched' => $now->toDateTime(),
+                                            'last_touched_at' => $now->toDateTime(),
                                             'verifies_until' => $now->addMinutes(Config::get('verifications.actions.'. $action .'.expires_in'))->toDateTime()
                                         ])->refresh();
 
