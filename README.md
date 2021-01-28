@@ -60,17 +60,17 @@ Let's say we want to verify the secret **money-balance** screen.
 
 Define the action in your config:
 ```php
-    'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
+    'enabled' => env('VERIFICATION_ENABLED', true),
     'actions' => [
         'money-balance' => [
-            'enabled' => true,                               // you can enable/disable single action
-            'channel' => 'sms',                              // currently: sms, email
-            'expires_in' => 15,                              // specifies how many minutes does it take to require another code verification for the same action
-            'expires_from' => 'verification',                // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see expires_in)
+            'enabled' => true,
+            'channel' => 'sms',
+            'expires_in' => 15,
+            'expires_from' => 'verification',
             'code' => [
-                'type' => 'numeric',                         // specifies the type of verification code, can be one of: 'numeric' or 'string'
-                'length' => 6,                               // specifies the verification code length, defaults to 6
-                'expires_in' => 10,                          // specifies how many minutes is the code valid
+                'type' => 'numeric',
+                'length' => 6,
+                'expires_in' => 10,
             ]
         ]
     ]
