@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Brackets\Verifications\Commands;
 
 use Illuminate\Console\Command;

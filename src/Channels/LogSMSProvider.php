@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Brackets\Verifications\Channels;
 
 use Brackets\Verifications\Models\Verifiable;
@@ -15,6 +14,6 @@ class LogSMSProvider extends SMSProvider
      */
     public function sendCode(Verifiable $verifiable, string $code): void
     {
-        Log::info("New SMS verification to: " . $verifiable->getPhoneAttribute() . " with message: " . $this->renderSMSMessage($code));
+        Log::info("New SMS verification to: " . $verifiable->phone . " with message: " . $this->renderSMSMessage($code));
     }
 }

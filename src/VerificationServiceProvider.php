@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Brackets\Verifications;
 
 use Brackets\Verifications\Channels\Contracts\EmailProviderInterface;

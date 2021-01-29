@@ -3,13 +3,11 @@
 namespace Brackets\Verifications\Http\Controllers;
 
 use Brackets\Verifications\Facades\Verification;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
 class VerificationController extends BaseController
@@ -36,11 +34,11 @@ class VerificationController extends BaseController
 
         switch ($channel) {
             case 'sms':
-                $contact = $this->getMutedString(Auth::user()->getPhoneAttribute());
+                $contact = $this->getMutedString(Auth::user()->phone);
                 break;
 
             case 'email':
-                $contact = $this->getMutedString(Auth::user()->getEmailAttribute(), 3, 5);
+                $contact = $this->getMutedString(Auth::user()->email, 3, 5);
                 break;
         }
 
@@ -70,7 +68,7 @@ class VerificationController extends BaseController
     {
         Verification::setUser(Auth::user());
 
-        return Verification::generateCodeAndSend($request->get('action_name'))
+        return Verification::generateCodeAndSend($request->get('action_name'), $request->ip())
             ? Redirect::back()->with('success', trans('brackets/verifications::verifications.code_resend_success'))
             : Redirect::back()->with('error', trans('brackets/verifications::verifications.code_resend_error'));
     }
@@ -82,14 +80,8 @@ class VerificationController extends BaseController
      */
     public function verify(Request $request)
     {
-        if (Verification::verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))) {
-            if (Config::get('verifications.actions.'. $request->get('action_name') .'.keep_verified_during_session')) {
-                Session::put('last_activity', Carbon::now()->toDateTime());
-            }
-
-            return Redirect::to($request->get('redirectToUrl'))->with('success', trans('brackets/verifications::verifications.code_verify_success'));
-        }
-
-        return Redirect::back()->with('error', trans('brackets/verifications::verifications.code_verify_failed'));
+        return Verification::verifyCode(Auth::user(), $request->get('action_name'), $request->get('code'))
+            ? Redirect::to($request->get('redirectToUrl'))->with('success', trans('brackets/verifications::verifications.code_verify_success'))
+            : Redirect::back()->with('error', trans('brackets/verifications::verifications.code_verify_failed'));
     }
 }

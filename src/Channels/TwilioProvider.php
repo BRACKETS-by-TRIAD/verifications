@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Brackets\Verifications\Channels;
 
 use Brackets\Verifications\Models\Verifiable;
@@ -20,7 +19,7 @@ class TwilioProvider extends SMSProvider
         $auth_token = Config::get('twilio.auth_token');
         $this->twilio_number = Config::get('twilio.twilio_number');
 
-        $this->twilioClient = new Client($account_sid, $auth_token);      // commented in case of test purposes
+        $this->twilioClient = new Client($account_sid, $auth_token);
     }
 
     /**
@@ -31,7 +30,7 @@ class TwilioProvider extends SMSProvider
     public function sendCode(Verifiable $verifiable, string $code): void
     {
         try {
-            $this->twilioClient->messages->create($verifiable->getPhoneAttribute(), [
+            $this->twilioClient->messages->create($verifiable->phone, [
                 'from' => $this->twilio_number,
                 'body' => $this->renderSMSMessage($code)
             ]);

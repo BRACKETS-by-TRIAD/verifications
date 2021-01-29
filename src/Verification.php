@@ -9,12 +9,10 @@ use Brackets\Verifications\CodeGenerator\Contracts\GeneratorInterface;
 use Brackets\Verifications\Models\Verifiable;
 use Brackets\Verifications\Repositories\VerificationCodesRepository;
 use Brackets\Verifications\Traits\VerifiableTrait;
-use Carbon\Carbon;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\Session;
 
 class Verification
 {
@@ -44,13 +42,9 @@ class Verification
     public function verify(string $action, string $redirectTo, \Closure $closure = null)
     {
         if ($this->shouldVerify($action)) {
-            $this->generateCodeAndSend($action);
+            $this->generateCodeAndSend($action, Container::getInstance()->make('request')->ip());
 
             return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectTo]);
-        }
-
-        if (Config::get('verifications.actions.'. $action .'.keep_verified_during_session')) {
-            Session::put('last_activity', Carbon::now()->toDateTime());
         }
 
         return is_null($closure) ? true : $closure();
@@ -77,23 +71,25 @@ class Verification
 
     /**
      * @param string $action
+     * @param string $hostIp
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @return bool
      */
-    public function generateCodeAndSend(string $action): bool
+    public function generateCodeAndSend(string $action, string $hostIp): bool
     {
         $code = $this->generateCode($action);
 
         /** @var ChannelProviderInterface $provider */
         $provider = $this->getProvider($action);
 
-        $this->repo->createCode($this->getUser(), $action, $code);
+        $this->repo->createCode($this->getUser(), $action, $hostIp, $code);
 
         $provider->sendCode($this->getUser(), $code);
 
         return true;
     }
 
-    private function getProvider(string $action)
+    private function getProvider(string $action): ChannelProviderInterface
     {
         $channel = Config::get('verifications.actions.'.$action .'.channel');
 
