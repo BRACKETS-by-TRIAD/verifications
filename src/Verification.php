@@ -37,8 +37,8 @@ class Verification
      * @param string $action
      * @param string|null $redirectTo
      * @param \Closure|null $closure
-     * @return bool|\Illuminate\Http\RedirectResponse|mixed
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @return bool|\Illuminate\Http\RedirectResponse|mixed
      */
     public function verify(string $action, string $redirectTo = null, \Closure $closure = null)
     {
