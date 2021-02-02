@@ -13,6 +13,7 @@ use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\URL;
 
 class Verification
 {
@@ -34,15 +35,17 @@ class Verification
 
     /**
      * @param string $action
-     * @param string $redirectTo
+     * @param string|null $redirectTo
      * @param \Closure|null $closure
-     * @throws \Exception
      * @return bool|\Illuminate\Http\RedirectResponse|mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    public function verify(string $action, string $redirectTo, \Closure $closure = null)
+    public function verify(string $action, string $redirectTo = null, \Closure $closure = null)
     {
         if ($this->shouldVerify($action)) {
             $this->generateCodeAndSend($action, Container::getInstance()->make('request')->ip());
+
+            $redirectTo = $redirectTo ?: URL::previous();
 
             return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectTo]);
         }
@@ -61,7 +64,11 @@ class Verification
         return $this->repo->verifyCode($verifiable, $action, $code);
     }
 
-    private function shouldVerify(string $action): bool
+    /**
+     * @param string $action
+     * @return bool
+     */
+    public function shouldVerify(string $action): bool
     {
         return Config::get('verifications.enabled')
             && !is_null($this->getUser())
