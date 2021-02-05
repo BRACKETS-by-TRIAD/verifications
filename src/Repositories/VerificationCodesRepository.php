@@ -10,16 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 class VerificationCodesRepository
 {
-    public function createCode(Verifiable $verifiable, string $action, string $hostIp, string $code)
+    public function createCode(Verifiable $verifiable, string $action, string $ipAddress, string $code)
     {
-        return DB::transaction(function () use ($verifiable, $action, $hostIp, $code) {
+        return DB::transaction(function () use ($verifiable, $action, $ipAddress, $code) {
             $codeValidInMinutes = Config::get('verifications.actions.'. $action .'.code.expires_in');
 
             return VerificationCode::create([
                 'verifiable_id' => $verifiable->getKey(),
                 'verifiable_type' => $verifiable->getMorphClass(),
                 'code' => $code,
-                'host_ip' => $hostIp,
+                'ip_address' => $ipAddress,
                 'action_name' => $action,
                 'expires_at' => Carbon::now()->addMinutes($codeValidInMinutes)->toDateTime()
             ]);

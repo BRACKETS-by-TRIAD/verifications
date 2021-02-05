@@ -13,6 +13,7 @@ use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\URL;
 
 class Verification
@@ -43,7 +44,7 @@ class Verification
     public function verify(string $action, string $redirectTo = null, \Closure $closure = null)
     {
         if ($this->shouldVerify($action)) {
-            $this->generateCodeAndSend($action, Container::getInstance()->make('request')->ip());
+            $this->generateCodeAndSend($action, Request::ip());
 
             $redirectTo = $redirectTo ?: URL::previous();
 
@@ -78,18 +79,18 @@ class Verification
 
     /**
      * @param string $action
-     * @param string $hostIp
+     * @param string $ipAddress
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @return bool
      */
-    public function generateCodeAndSend(string $action, string $hostIp): bool
+    public function generateCodeAndSend(string $action, string $ipAddress): bool
     {
         $code = $this->generateCode($action);
 
         /** @var ChannelProviderInterface $provider */
         $provider = $this->getProvider($action);
 
-        $this->repo->createCode($this->getUser(), $action, $hostIp, $code);
+        $this->repo->createCode($this->getUser(), $action, $ipAddress, $code);
 
         $provider->sendCode($this->getUser(), $code);
 

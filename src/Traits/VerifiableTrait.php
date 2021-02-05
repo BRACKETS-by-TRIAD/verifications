@@ -53,7 +53,7 @@ trait VerifiableTrait
     public function isVerificationEnabled(string $action): bool
     {
         if (Config::get('verifications.actions.'.$action.'.enabled')) {
-            return method_exists('isVerificationRequired', $this)
+            return method_exists($this, 'isVerificationRequired')
                 ? $this->isVerificationRequired($action)
                 : true;
         }
