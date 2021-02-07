@@ -31,7 +31,8 @@ class VerificationCodesRepository
     {
         $now = Carbon::now()->toDateTime();
 
-        $verificationCode = VerificationCode::allFor($verifiable)
+        $verificationCode = VerificationCode::query()
+                                            ->allFor($verifiable)
                                             ->where('action_name', $action)
                                             ->where('code', $code)
                                             ->whereNull('used_at')
