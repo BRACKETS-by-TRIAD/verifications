@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class VerificationCodesRepository
 {
-    public function createCode(Verifiable $verifiable, string $action, string $ipAddress, string $code)
+    public function createCode(Verifiable $verifiable, string $action, string $ipAddress, string $userAgent, string $code)
     {
-        return DB::transaction(function () use ($verifiable, $action, $ipAddress, $code) {
+        return DB::transaction(function () use ($verifiable, $action, $ipAddress, $userAgent, $code) {
             $codeValidInMinutes = Config::get('verifications.actions.'. $action .'.code.expires_in');
 
             return VerificationCode::create([
@@ -21,6 +21,7 @@ class VerificationCodesRepository
                 'code' => $code,
                 'ip_address' => $ipAddress,
                 'action_name' => $action,
+                'user_agent' => $userAgent,
                 'expires_at' => Carbon::now()->addMinutes($codeValidInMinutes)->toDateTime()
             ]);
         });

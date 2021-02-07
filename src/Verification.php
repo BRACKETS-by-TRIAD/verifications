@@ -38,13 +38,12 @@ class Verification
      * @param string $action
      * @param string|null $redirectTo
      * @param \Closure|null $closure
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      * @return bool|\Illuminate\Http\RedirectResponse|mixed
      */
     public function verify(string $action, string $redirectTo = null, \Closure $closure = null)
     {
         if ($this->shouldVerify($action)) {
-            $this->generateCodeAndSend($action, Request::ip());
+            $this->generateCodeAndSend($action, Request::ip(), Request::userAgent());
 
             $redirectTo = $redirectTo ?: URL::previous();
 
@@ -80,17 +79,17 @@ class Verification
     /**
      * @param string $action
      * @param string $ipAddress
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @param string $userAgent
      * @return bool
      */
-    public function generateCodeAndSend(string $action, string $ipAddress): bool
+    public function generateCodeAndSend(string $action, string $ipAddress, string $userAgent): bool
     {
         $code = $this->generateCode($action);
 
         /** @var ChannelProviderInterface $provider */
         $provider = $this->getProvider($action);
 
-        $this->repo->createCode($this->getUser(), $action, $ipAddress, $code);
+        $this->repo->createCode($this->getUser(), $action, $ipAddress, $userAgent, $code);
 
         $provider->sendCode($this->getUser(), $code);
 

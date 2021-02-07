@@ -24,6 +24,7 @@ class CreateVerificationCodesTable extends Migration
             $table->dateTime('used_at')->nullable();            // dateTime when the code has been submitted by verification form
             $table->dateTime('last_touched_at')->nullable();
             $table->ipAddress('ip_address');
+            $table->string('user_agent');
             $table->timestamps();
 
             $table->unique(['verifiable_id', 'verifiable_type', 'code', 'action_name']);
