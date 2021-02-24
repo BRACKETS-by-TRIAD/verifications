@@ -27,7 +27,7 @@ trait VerifiableTrait
 
         switch (Config::get('verifications.actions.'. $action .'.expires_from')) {
             case 'last-activity':
-                return $this->touchVerifications($now, $action);
+                return $this->touchAndGetVerifications($now, $action);
 
             case 'verification':
                 return VerificationCode::allFor($this)->where('verifies_until', '>=', $now->toDateTime())->get();
@@ -37,7 +37,7 @@ trait VerifiableTrait
         }
     }
 
-    private function touchVerifications(\DateTime $now, string $action): Collection
+    private function touchAndGetVerifications(\DateTime $now, string $action): Collection
     {
         $verificationsQuery = VerificationCode::query()->allActiveForAction($this, $action, $now->toDateTime());
         $verificationsQuery->update([
