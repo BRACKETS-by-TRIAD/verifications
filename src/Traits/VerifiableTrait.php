@@ -27,13 +27,7 @@ trait VerifiableTrait
 
         switch (Config::get('verifications.actions.'. $action .'.expires_from')) {
             case 'last-activity':
-                 $verificationsQuery = VerificationCode::allActiveForAction($this, $action, $now->toDateTime());
-                 $verificationsQuery->update([
-                     'last_touched_at' => $now->toDateTime(),
-                     'verifies_until' => $now->addMinutes(Config::get('verifications.actions.'. $action .'.expires_in'))->toDateTime()
-                 ]);
-
-                 return $verificationsQuery->get();
+                return $this->touchAndGetVerifications($now, $action);
 
             case 'verification':
                 return VerificationCode::allFor($this)->where('verifies_until', '>=', $now->toDateTime())->get();
@@ -41,6 +35,17 @@ trait VerifiableTrait
             default:
                 throw new \Exception('Unspecified expiration type');
         }
+    }
+
+    private function touchAndGetVerifications(\DateTime $now, string $action): Collection
+    {
+        $verificationsQuery = VerificationCode::query()->allActiveForAction($this, $action, $now->toDateTime());
+        $verificationsQuery->update([
+            'last_touched_at' => $now->toDateTime(),
+            'verifies_until' => $now->addMinutes(Config::get('verifications.actions.'. $action .'.expires_in'))->toDateTime()
+        ]);
+
+        return $verificationsQuery->get();
     }
 
     public function isVerificationActive(string $action): bool
@@ -53,7 +58,7 @@ trait VerifiableTrait
     public function isVerificationEnabled(string $action): bool
     {
         if (Config::get('verifications.actions.'.$action.'.enabled')) {
-            return method_exists('isVerificationRequired', $this)
+            return method_exists($this, 'isVerificationRequired')
                 ? $this->isVerificationRequired($action)
                 : true;
         }
