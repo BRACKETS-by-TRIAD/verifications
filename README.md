@@ -31,17 +31,18 @@ Then you need to define an action that would require verification.
 This can be achieved in the configuration file `/config/verifications.php`. 
  
 ```php
-    'enabled' => env('VERIFICATION_ENABLED', true), // you can enable/disable globally (i.e. disabled for tests/dev env)
+    'enabled' => env('VERIFICATION_ENABLED', true),                     // you can enable/disable globally (i.e. disabled for tests/dev env)
     'actions' => [
         'my-action' => [
-            'enabled' => true,                               // you can enable/disable single action
-            'channel' => 'sms',                              // currently: sms, email
-            'expires_in' => 15,                              // specifies how many minutes does it take to require another code verification for the same action
-            'expires_from' => 'verification',                // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see expires_in)
+            'enabled' => true,                                          // you can enable/disable single action
+            'channel' => 'sms',                                         // currently: sms, email
+            'form_template' => 'brackets/verifications::verification',  // blade name with namespace used for verification code form
+            'expires_in' => 15,                                         // specifies how many minutes does it take to require another code verification for the same action
+            'expires_from' => 'verification',                           // one of: 'last-activity' or 'verification', specifies what triggers the expiration (see expires_in)
             'code' => [
-                'type' => 'numeric',                         // specifies the type of verification code, can be one of: 'numeric' or 'string'
-                'length' => 6,                               // specifies the verification code length, defaults to 6
-                'expires_in' => 10,                          // specifies how many minutes is the code valid
+                'type' => 'numeric',                                    // specifies the type of verification code, can be one of: 'numeric' or 'string'
+                'length' => 6,                                          // specifies the verification code length, defaults to 6
+                'expires_in' => 10,                                     // specifies how many minutes is the code valid
             ]
         ]
     ]
@@ -65,6 +66,7 @@ Define the action in your config:
         'money-balance' => [
             'enabled' => true,
             'channel' => 'sms',
+            'form_template' => 'brackets/verifications::verification',
             'expires_in' => 15,
             'expires_from' => 'verification',
             'code' => [
@@ -252,9 +254,9 @@ The package ships with the one SMS provider - Twilio.
 To use Twilio, you just need to provide these variables in your `.env` file:
 
 ```.
-TWILIO_SID:"INSERT YOUR TWILIO SID HERE"
-TWILIO_AUTH_TOKEN:"INSERT YOUR TWILIO TOKEN HERE"
-TWILIO_NUMBER:"INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
+TWILIO_SID="INSERT YOUR TWILIO SID HERE"
+TWILIO_AUTH_TOKEN="INSERT YOUR TWILIO TOKEN HERE"
+TWILIO_NUMBER="INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
 ```
 
 Check out [this blogpost](https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio) to find out more info about the Twilio integration.
