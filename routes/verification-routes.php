@@ -1,6 +1,6 @@
 <?php
 
-Route::middleware(['web', 'auth:' . Illuminate\Support\Facades\Config::get('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+Route::middleware(['web', 'auth:' . Illuminate\Support\Facades\Config::get('admin-auth.defaults.guard')])->group(static function () {
     Route::namespace('Brackets\Verifications\Http\Controllers')->group(static function () {
         Route::get('/verify-code', 'VerificationController@showVerificationForm')->name('brackets/verifications/show');
 
