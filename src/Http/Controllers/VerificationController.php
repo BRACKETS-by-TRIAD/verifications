@@ -3,6 +3,7 @@
 namespace Brackets\Verifications\Http\Controllers;
 
 use Brackets\Verifications\Facades\Verification;
+use Illuminate\Contracts\View\View as ViewInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -10,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
-use Illuminate\Contracts\View\View as ViewInterface;
 
 class VerificationController extends BaseController
 {
@@ -18,7 +18,7 @@ class VerificationController extends BaseController
     {
         $redirectToUrl = $request->query('redirectToUrl');
         $action_name = $request->query('action');
-        $template = $request->query('template') ?? 'brackets/verifications::verification';
+        $template = Config::get('verifications.actions.' .$action_name. '.form_template', 'brackets/verifications::verification');
 
         list($channel, $contact) = array_values($this->getMappings($action_name));
 

@@ -37,18 +37,17 @@ class Verification
     /**
      * @param string $action
      * @param string|null $redirectTo
-     * @param string|null $template
      * @param \Closure|null $closure
      * @return bool|\Illuminate\Http\RedirectResponse|mixed
      */
-    public function verify(string $action, ?string $redirectTo = null, ?string $template = null, ?\Closure $closure = null)
+    public function verify(string $action, string $redirectTo = null, \Closure $closure = null)
     {
         if ($this->shouldVerify($action)) {
             $this->generateCodeAndSend($action, Request::ip(), Request::userAgent());
 
             $redirectTo = $redirectTo ?: URL::previous();
 
-            return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectTo, 'template' => $template]);
+            return Redirect::route('brackets/verifications/show', ['action' => $action, 'redirectToUrl' => $redirectTo]);
         }
 
         return is_null($closure) ? true : $closure();
