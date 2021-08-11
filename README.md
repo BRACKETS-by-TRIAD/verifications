@@ -252,9 +252,9 @@ The package ships with the one SMS provider - Twilio.
 To use Twilio, you just need to provide these variables in your `.env` file:
 
 ```.
-TWILIO_SID:"INSERT YOUR TWILIO SID HERE"
-TWILIO_AUTH_TOKEN:"INSERT YOUR TWILIO TOKEN HERE"
-TWILIO_NUMBER:"INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
+TWILIO_SID="INSERT YOUR TWILIO SID HERE"
+TWILIO_AUTH_TOKEN="INSERT YOUR TWILIO TOKEN HERE"
+TWILIO_NUMBER="INSERT YOUR TWILIO NUMBER IN [E.164] FORMAT"
 ```
 
 Check out [this blogpost](https://www.twilio.com/blog/create-sms-portal-laravel-php-twilio) to find out more info about the Twilio integration.

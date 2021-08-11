@@ -29,9 +29,9 @@ class VerifyMiddleware
         list($action) = explode(":", $params);
 
         if ($request->isMethod('post')) {
-            $response = $this->verification->verify($action, URL::previous());
+            $response = $this->verification->verify($action, URL::previous(), $request->get('template'));
         } else {
-            $response = $this->verification->verify($action, $request->url());
+            $response = $this->verification->verify($action, $request->url(), $request->query('template'));
         }
 
         if ($response !== true) {
