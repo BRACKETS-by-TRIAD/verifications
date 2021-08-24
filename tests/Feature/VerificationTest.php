@@ -50,7 +50,5 @@ class VerificationTest extends TestCase
     public function can_send_verification_code()
     {
         $this->actingAs($this->testUser);
-
-
     }
 }
